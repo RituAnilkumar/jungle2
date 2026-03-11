@@ -1,0 +1,16 @@
+# Custom torch model with MC Dropout applied at inference.
+#
+# Point custom_class at any nn.Module that:
+#   1. Accepts (in_dim, hidden_dims, dropout_p) as constructor args.
+#   2. Contains nn.Dropout layers (required for stochastic inference).
+#
+# Compatible conformal types: absolute_residuals, normalized_residuals
+
+name: mc_dropout_ann    # routes through the mc_dropout_ann train/predict logic
+
+hidden_dims: [128, 64, 32]
+dropout_p:   0.1
+mc_samples:  200
+
+# Fully qualified class path to your custom architecture
+custom_class: mypackage.mymodule.MyCustomNet

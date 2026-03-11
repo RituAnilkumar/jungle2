@@ -1,0 +1,9 @@
+hidden_layer_size:
+  - 32
+  - 32
+activation: "relu"      # one of: "identity", "logistic", "tanh", "relu"
+solver: "adam"          # "lbfgs", "sgd", or "adam"
+learning_rate_init: 0.01
+alpha: 0.0001 # L2 penalty
+max_iter: 1000
+random_state: 42

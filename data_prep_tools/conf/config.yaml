@@ -1,0 +1,25 @@
+# config.yaml
+hydra:
+ sweep:
+   subdir: ${hydra.job.override_dirname}
+ job:
+   config:
+     override_dirname:
+       kv_sep: "="       # a=1 style
+       item_sep: ","     # a=1,b=2 style
+       exclude_keys:     # keys to omit from the generated dirname
+         - seed
+defaults:
+  - input: met_download_preprocess
+  - combine: combine_input_csvs
+  # - model: sklearn_model
+  - model: bayesnf_oggm
+  - _self_
+
+use_precomputed_inputs: false
+inp_csv: "C:\\Users\\jz25104\\OneDrive - University of Bristol\\Desktop\\Misc_to_del\\inp_df.csv"
+use_precomputed_targets: false
+target_aggregation: "no aggregation" # Choose "temporal" or "spatial" or "combined" or "no aggregation"
+targ_csv_list: 
+  - "C:\\Users\\jz25104\\OneDrive - University of Bristol\\Desktop\\Misc_to_del\\targ_df.csv" # Temporal aggregation or no aggregation
+  - "C:\\Users\\jz25104\\OneDrive - University of Bristol\\Desktop\\Misc_to_del\\targ_df.csv" # Spatial aggregation

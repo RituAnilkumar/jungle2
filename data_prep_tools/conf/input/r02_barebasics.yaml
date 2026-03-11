@@ -1,0 +1,209 @@
+### Change only what you need. DO NOT DELETE ANY VARIABLE AS A CHECKS IS PERFORMED AT THE START FOR THE TYPES OF INPUTS. Does not check for validity of input unless its being used.
+## -------------------------------------------------------- ##
+## ---------- Meteorological Dataset Information ---------- ##
+## -------------------------------------------------------- ##
+
+data_provider: "gee" # Choose from "gee" or "cds". In both cases its assumed that the necessary libraries are preinstalled in the conda env. xxxx Writing code for gee for now now
+
+save_gee_data: false # Choose from true or false. This is only for data from earth engine: era5, era5land, other dynamic or static datasets. 
+
+data_name: "era5land" # Choose from "era5", "era5land" or "others". The option "others" assumes you have downlaoded the data. xxxx Writing code for era5land only for now
+
+# In the following, add -"var_name" in new line from band list at one of the following:
+# hourly data: most bands on https://developers.google.com/earth-engine/datasets/catalog/ECMWF_ERA5_HOURLY#bands
+# daily data: minimal bands ahve been aggregated already https://developers.google.com/earth-engine/datasets/catalog/ECMWF_ERA5_DAILY#bands
+# monthly data: minimal bands ahve been aggregated already https://developers.google.com/earth-engine/datasets/catalog/ECMWF_ERA5_MONTHLY#bands
+era5:
+  era5_vars: 
+    - "mean_2m_air_temperature"
+    - "total_precipitation"
+    - "surface_solar_radiation_downwards"
+
+# Similar can add variables to  downlaod and aggregate from the following:
+# Hourly data: https://developers.google.com/earth-engine/datasets/catalog/ECMWF_ERA5_LAND_HOURLY#bands
+# Daily data: Same vars from hourly. Also includes mean, min and max aggregates directly: https://developers.google.com/earth-engine/datasets/catalog/ECMWF_ERA5_LAND_DAILY_AGGR#bands
+# Monthly: bands simialr to daily
+# Monthly data: https://developers.google.com/earth-engine/datasets/catalog/ECMWF_ERA5_LAND_MONTHLY_AGGR#bands
+era5land:
+  era5land_vars:
+    - "temperature_2m"
+    - "total_precipitation_sum"
+    - "surface_solar_radiation_downwards_sum"
+    # - "snowfall_sum"
+    # - "surface_net_solar_radiation_sum"
+    # - "v_component_of_wind_10m"
+    # - "u_component_of_wind_10m"
+    # - "temperature_2m_min"
+    # - "temperature_2m_max"
+    # - "surface_net_solar_radiation_min"
+    # - "surface_net_solar_radiation_max"
+    # - "surface_solar_radiation_downwards_min"
+    # - "surface_solar_radiation_downwards_max"
+
+# For the "others" option provide the path list (to nc file) of variable names. xxxx Assumes daily data of W5e5 for now, but not fully implemented.
+others:
+  others_paths:
+    - "C:\\Users\\jz25104\\OneDrive - University of Bristol\\Desktop\\bhm\\iceland_bnftrials\\iceland_bnftrials" # The parent folder
+    - "C:\\Users\\jz25104\\OneDrive - University of Bristol\\Desktop\\bhm\\iceland_bnftrials\\iceland_bnftrials\\tas" # The variable folder
+    - "C:\\Users\\jz25104\\OneDrive - University of Bristol\\Desktop\\bhm\\iceland_bnftrials\\iceland_bnftrials\\pr" # The variable folder
+    - "C:\\Users\\jz25104\\OneDrive - University of Bristol\\Desktop\\bhm\\iceland_bnftrials\\iceland_bnftrials\\tas\\tas_W5E5v2.0_19910101-20001231_isl.nc" # the nc file
+    - "C:\\Users\\jz25104\\OneDrive - University of Bristol\\Desktop\\bhm\\iceland_bnftrials\\iceland_bnftrials\\tas\\tas_W5E5v2.0_20010101-20101231_isl.nc" # the nc file
+    - "C:\\Users\\jz25104\\OneDrive - University of Bristol\\Desktop\\bhm\\iceland_bnftrials\\iceland_bnftrials\\tas\\tas_W5E5v2.0_20110101-20191231_isl.nc" # the nc file
+    - "C:\\Users\\jz25104\\OneDrive - University of Bristol\\Desktop\\bhm\\iceland_bnftrials\\iceland_bnftrials\\pr\\pr_W5E5v2.0_19910101-20001231_isl.nc" # the nc file
+    - "C:\\Users\\jz25104\\OneDrive - University of Bristol\\Desktop\\bhm\\iceland_bnftrials\\iceland_bnftrials\\pr\\pr_W5E5v2.0_20010101-20101231_isl.nc" # the nc file
+    - "C:\\Users\\jz25104\\OneDrive - University of Bristol\\Desktop\\bhm\\iceland_bnftrials\\iceland_bnftrials\\pr\\pr_W5E5v2.0_20110101-20191231_isl.nc" # the nc file
+
+# Variance computation dataset description
+sigma_vars:
+  # - "surface_solar_radiation_downwards"
+  # - "temperature_2m"
+
+## -------------------------------------------------------- ##
+## ---------- Other Dynamic Datasets Information ---------- ##
+## -------------------------------------------------------- ##
+
+# I assume GEE is the source for these datasets. Pick the data and bands from https://developers.google.com/earth-engine/datasets/catalog/
+# Make static is boolean to apply aggregations in the entire temporal period
+gee_imcols:
+  # - gee_imcol_id: "MODIS/061/MCD43A3"
+  #   gee_imcol_bands:
+  #     - band_name: "Albedo_WSA_shortwave"
+  #       make_static: false
+  #       scale: 1000
+  #     - band_name: "Albedo_BSA_shortwave"
+  #       make_static: false
+  #       scale: 1000
+  # - gee_imcol_id: "MODIS/061/MOD10A1"
+  #   gee_imcol_bands:
+  #     - band_name: "NDSI"
+  #       make_static: true
+  #       scale: 1000
+
+## -------------------------------------------------------- ##
+## -------------- Albedo Datasets Information ------------- ##
+## -------------------------------------------------------- ##
+albedo_mode: "landsat_liang" # Choose from modis, landsat_liang, landsat_ml. xxxxx For now only landsat_liang and modis is implemented
+albedo_agg_months:
+  start_m: "04" # Choose the start and end months to aggregate over. Median value over all (not each of) these months is used. 
+  end_m: "09"
+  
+## ------------------------------------------------ ##
+## ---------- Static Dataset Information ---------- ##
+## ------------------------------------------------ ##
+
+rgi_data_provider: "rgi_csv" # Presently the only choice is "rgi_csv" and "rgi_shp". xxxx Am not writing gee version to extract from dem for now, although its possible from the make_static=true in gee_imcols. 
+
+## WSL version
+# rgi_attr_path: '/mnt/c/Users/jz25104/OneDrive - University of Bristol/Desktop/liquidice_data/rgi_inventory/v6/nsidc0770_06.rgi60.Iceland/06_rgi60_Iceland.shp'
+rgi_attr_path: '/mnt/c/Users/jz25104/OneDrive - University of Bristol/Desktop/liquidice_data/rgi_inventory/v6/nsidc0770_00.rgi60.attribs/02_rgi60_WesternCanadaUS.csv'
+## Windows version
+# rgi_attr_path: "C:\\Users\\jz25104\\OneDrive - University of Bristol\\Desktop\\liquidice_data\\rgi_inventory\\RGI2000-v7.0-G-global\\attr_csv\\RGI2000-v7.0-G-06_iceland-attributes.csv" #"path/to/rgi/attributes.csv"
+# rgi_attr_path: "C:\\Users\\jz25104\\OneDrive - University of Bristol\\Desktop\\liquidice_data\\rgi_inventory\\RGI2000-v7.0-G-global\\RGI2000-v7.0-G-06_iceland\\RGI2000-v7.0-G-06_iceland.shp" #"path/to/rgi/attributes.csv"
+
+
+rgi_cols: # Column names to be extracted as input features for training. rgi_id, cenlat and cenlon are always included
+  - "Area"
+  - "Zmin"
+  - "Zmax"
+  - "Zmed"
+  - "Slope"
+  - "Aspect"
+
+use_debris: false
+# USe the path where herreid and pelliciotti debris data is stored
+debris_path: '/mnt/c/Users/jz25104/OneDrive - University of Bristol/Desktop/liquidice_data/debrisglaciers_herreidPelliciotti/fin_join_iceland.shp'
+debris_fill_mode: "median" # Choose "mean" or "median" or "null" where null would remove all glaciers where the measurement is not available and mean/median will fill them. XXXX only median implemented
+## ------------------------------------------ ##
+## ---------- Boundary Information ---------- ##
+## ------------------------------------------ ##
+
+area_mode: "reg_num" # Choose "shp", "reg_num" or "bbox". "shp" is to be selected if you have your own area of interest. "reg_num" if you are using the rgi7 regions number, "bbox" if you are providing coordinates of a bounding box
+
+shp:
+  shp_path: "C:\\Users\\jz25104\\OneDrive - University of Bristol\\Desktop\\Misc_to_del\\del.shp" # The path to the are of interest file in shp format
+
+reg_num:
+  rgi_code: "02" # Use the "nn" form of the number and pass as a string. For eg "06" is Iceland
+
+bbox:
+  bbox_coords: # Coordinates in LowerLat,UpperLat,LowerLon,UpperLon as float format. Longitudes are from -180 to 180. Lats are from -90 to 90
+    - 25.0
+    - 28.0
+    - 75.0
+    - 90.0
+
+
+## ------------------------------------------ ##
+## ---------- Temporal Information ---------- ##
+## ------------------------------------------ ##
+# time_ranges:
+#   - start_datetime: "2005-01-01T00:00:00" # Time of start (inclusive) in "yyyy-mm-ddThh:mm:ss" format
+#     end_datetime: "2005-02-28T23:59:59" # End time (excluded) in "yyyy-mm-ddThh:mm:ss" format
+#   - start_datetime: "2005-01-01T00:00:00" # Time of start (inclusive) in "yyyy-mm-ddThh:mm:ss" format
+#     end_datetime: "2005-03-31T23:59:59" 
+time_ranges:
+  - start_datetime: "1999-01-01T00:00:00"
+    end_datetime:   "1999-12-31T23:59:59"
+  - start_datetime: "2000-01-01T00:00:00"
+    end_datetime:   "2000-12-31T23:59:59"
+  - start_datetime: "2001-01-01T00:00:00"
+    end_datetime:   "2001-12-31T23:59:59"
+  - start_datetime: "2002-01-01T00:00:00"
+    end_datetime:   "2002-12-31T23:59:59"
+  - start_datetime: "2003-01-01T00:00:00"
+    end_datetime:   "2003-12-31T23:59:59"
+  - start_datetime: "2004-01-01T00:00:00"
+    end_datetime:   "2004-12-31T23:59:59"
+  - start_datetime: "2005-01-01T00:00:00"
+    end_datetime:   "2005-12-31T23:59:59"
+  - start_datetime: "2006-01-01T00:00:00"
+    end_datetime:   "2006-12-31T23:59:59"
+  - start_datetime: "2007-01-01T00:00:00"
+    end_datetime:   "2007-12-31T23:59:59"
+  - start_datetime: "2008-01-01T00:00:00"
+    end_datetime:   "2008-12-31T23:59:59"
+  - start_datetime: "2009-01-01T00:00:00"
+    end_datetime:   "2009-12-31T23:59:59"
+  - start_datetime: "2010-01-01T00:00:00"
+    end_datetime:   "2010-12-31T23:59:59"
+  - start_datetime: "2011-01-01T00:00:00"
+    end_datetime:   "2011-12-31T23:59:59"
+  - start_datetime: "2012-01-01T00:00:00"
+    end_datetime:   "2012-12-31T23:59:59"
+  - start_datetime: "2013-01-01T00:00:00"
+    end_datetime:   "2013-12-31T23:59:59"
+  - start_datetime: "2014-01-01T00:00:00"
+    end_datetime:   "2014-12-31T23:59:59"
+  - start_datetime: "2015-01-01T00:00:00"
+    end_datetime:   "2015-12-31T23:59:59"
+  - start_datetime: "2016-01-01T00:00:00"
+    end_datetime:   "2016-12-31T23:59:59"
+  - start_datetime: "2017-01-01T00:00:00"
+    end_datetime:   "2017-12-31T23:59:59"
+  - start_datetime: "2018-01-01T00:00:00"
+    end_datetime:   "2018-12-31T23:59:59"
+  - start_datetime: "2019-01-01T00:00:00"
+    end_datetime:   "2019-12-31T23:59:59"
+  - start_datetime: "2020-01-01T00:00:00"
+    end_datetime:   "2020-12-31T23:59:59"
+  - start_datetime: "2021-01-01T00:00:00"
+    end_datetime:   "2021-12-31T23:59:59"
+
+time_indx: 0
+temporal_freq_download: "M" # Choose the temporal frequency to download the meteorological data from "M", "D" or "H" which stands for month, day or hour respectively. xxxx writing for monthly only for now
+
+
+## --------------------------------------------- ##
+## ---------- Aggregation Information ---------- ##
+## --------------------------------------------- ##
+temporal_freq_aggregate: null # Choose the temporal frequency to aggregagte met data from "Y" or "M" which stands for year or month respectively. Choose null for no aggregation
+spatial_aggregation_file: null # The path to the shapefile to aggregate over if its different from the rgi_attr_path. If same, leave as null
+spatial_aggregation_opt: "sampling" # Uses rgi_attr_path.Choose from "sampling", "mean", "median". "sampling" is the only option for point shapefiles will pick the nearest pixel and add the meteoroligcal information to the shapefile attributes. All others are reducers which reduce over each of the features of the shapefile and include the meteoroligcal values as attribute information aggregated over the feature
+attr_geom: 'pt' # Choose from 'pt' or 'poly'. 'pt' for point shapefiles and 'poly' for polygon shapefiles. If pt, only sampling will work
+
+
+# ## ---------------------------------------- ##
+# ## ---------- Output Information ---------- ##
+# ## ---------------------------------------- ##
+# output_metdata_folder: "path/to/outputs/folder"
+# output_aggregations_folder: "path/to/outputs/folder"

@@ -1,0 +1,13 @@
+# Deep Ensemble — M independently trained DeterministicANN members.
+# Member spread gives an epistemic uncertainty proxy.
+# Supports both conformal types.
+#
+# Compatible conformal types: absolute_residuals, normalized_residuals
+
+name: deep_ensemble_ann
+
+hidden_dims: [10, 10]
+dropout_p:   0.0        # set > 0 to add within-member dropout too
+
+n_members:  5           # number of ensemble members
+base_seed:  999         # member i is trained with seed = base_seed + i

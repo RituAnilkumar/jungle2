@@ -1,0 +1,6 @@
+# Absolute residual nonconformity scores
+# Works with any model — only the predicted mean is needed.
+# type key must match a branch in src/model_conformal.py::run_conformal
+
+type: absolute_residuals
+alpha: 0.1       # miscoverage level → 90% marginal coverage

@@ -1,0 +1,25 @@
+# Dataset descriptor — Iceland ERA5 glacier mass balance
+#
+# To add a new dataset, create another file in configs/data/ and
+# switch via:  python main.py data=<your_file>
+
+path: /scratch/b5at/ranil.b5at/geoUQnet/data/iceland_era5_sampled.csv
+
+feature_cols:
+  - tp_accum_sum
+  - tp_accum_std
+  - ssrd_accum_sum
+  - ssrd_accum_std
+  - t2m_accum_mean
+  - t2m_accum_std
+  - tp_ablat_sum
+  - tp_ablat_std
+  - ssrd_ablat_sum
+  - ssrd_ablat_std
+  - t2m_ablat_mean
+  - t2m_ablat_std
+  - latitude
+  - longitude
+  - year
+
+target_col: annual_balance

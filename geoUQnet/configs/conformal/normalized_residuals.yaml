@@ -1,0 +1,7 @@
+# Normalised residual nonconformity scores
+# Requires a predictive std — valid for:
+#   mc_dropout_ann, deep_ensemble_ann, bayesian_ann
+
+type: normalized_residuals
+alpha: 0.1
+eps: 1.0e-6      # numerical stability floor added to predicted std

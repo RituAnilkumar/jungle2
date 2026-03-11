@@ -1,0 +1,23 @@
+## w5e5 annual
+inp_dir: "/scratch/b5at/ranil.b5at/data_prep_tools/data_for_model/w5e5runs/seasonal/" # don't use training /
+## era5l annual annminmax
+# inp_dir: "/scratch/b5at/ranil.b5at/data_prep_tools/data_for_model/data_for_model_annminmax/"
+reg_subdir: "r06"
+
+model_nlayers: 2
+model_nhidden: 64
+model_freq: "Y"
+model_nepochs: 50000
+model_nensemble: 10
+# NOTE YEAR HAS TO BE THE FIRST FEATURE IN THE LIST. GET THE FULL FT LIST FROM inp_dir/reg_subdir any csv file. Below in rm_fts, INCLUDE ONLY THOSE YOU DONT WANT. This is easier for hydra multiruns. In standardize_fts I include all but the year.
+
+model_ftcols: ['year', 'CenLon', 'CenLat', 'Slope', 'Area','Aspect', 'Zmed', 'Zmin', 'Zmax', 'tas_acc_mean', 'tas_abl_mean', 'pr_acc_sum', 'pr_abl_sum', 'rsds_abl_mean', 'rsds_acc_mean']
+model_targcols: "mass_balance"
+
+rm_fts: []  # remove features from model_ftcols if any
+
+model_obsmode: "NORMAL"
+use_stdscalar: false
+seasonality_periods: [5,10]
+num_seasonal_harmonics: [2,4]
+model_traintype: "VI" # choose from "MAP", "VI" and "MLE"

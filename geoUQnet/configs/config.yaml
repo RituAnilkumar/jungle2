@@ -1,0 +1,33 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# geoUQnet — root config
+#
+# Override any group from the CLI:
+#   python main.py model=deep_ensemble_ann conformal=normalized_residuals
+#   python main.py data.path=my_data.csv training.epochs=1000
+#   python main.py -m model=mc_dropout_ann,bayesian_ann   # multirun sweep
+# ─────────────────────────────────────────────────────────────────────────────
+
+## Please note: A note on the bayesian_ann.yaml training block: Hydra merges config groups in order,
+## so the training keys inside bayesian_ann.yaml will override the shared training block from config.yaml only for BNN runs. 
+## For all other models, the shared block in config.yaml applies cleanly — no duplication needed in the other model YAMLs
+
+defaults:
+  - data: wgms_era5_iceland
+  - model: mc_dropout_ann
+  - conformal: absolute_residuals
+  - _self_
+
+seed: 42
+
+splits:
+  test_size: 0.15
+  cal_size:  0.20
+  val_size:  0.15
+  seed: ${seed}
+
+training:
+  lr:           1.0e-3
+  weight_decay: 0.0
+  epochs:       500
+  batch_size:   256
+

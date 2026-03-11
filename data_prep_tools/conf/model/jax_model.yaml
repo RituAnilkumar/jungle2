@@ -1,0 +1,85 @@
+## --- Target Information --- ##
+training_mode: "pretraining_oggm" # one of: "pretraining_oggm", "finetuning_hug", "finetuning_glam_altgrav", "finetuning_combined", "standalone_hug", "standalone_glam_altgrav", "standalone_combined". TO DO: Add finetuning and standalone for glambie inputs
+
+# File paths to targets
+pretraining_oggm:
+  target_path: 'C:\Users\jz25104\OneDrive - University of Bristol\Desktop\data_prep_tools\data_for_model\targets_oggm_annual_pergla_iceland.csv'
+
+finetuning_hug:
+  pretraining_path: 'C:\Users\jz25104\OneDrive - University of Bristol\Desktop\data_prep_tools\data_for_model\targets_oggm_annual_pergla_iceland.csv'
+  target_path: 'C:\Users\jz25104\OneDrive - University of Bristol\Desktop\data_prep_tools\data_for_model\targets_hug_20yr_pergla_iceland.csv'
+
+finetuning_glam_altgrav:
+  pretraining_path: 'C:\Users\jz25104\OneDrive - University of Bristol\Desktop\data_prep_tools\data_for_model\targets_oggm_annual_pergla_iceland.csv'
+  target_path_alt: 'C:\Users\jz25104\OneDrive - University of Bristol\Desktop\data_prep_tools\data_for_model\targets_glam_alt_annual_reg_iceland.csv'
+  target_path_grav: 'C:\Users\jz25104\OneDrive - University of Bristol\Desktop\data_prep_tools\data_for_model\targets_glam_grav_annual_reg_iceland.csv'
+
+finetuning_combined:
+  pretraining_path: 'C:\Users\jz25104\OneDrive - University of Bristol\Desktop\data_prep_tools\data_for_model\targets_oggm_annual_pergla_iceland.csv'
+  target_path_hug: 'C:\Users\jz25104\OneDrive - University of Bristol\Desktop\data_prep_tools\data_for_model\targets_hug_20yr_pergla_iceland.csv'
+  target_path_alt: 'C:\Users\jz25104\OneDrive - University of Bristol\Desktop\data_prep_tools\data_for_model\targets_glam_alt_annual_reg_iceland.csv'
+  target_path_grav: 'C:\Users\jz25104\OneDrive - University of Bristol\Desktop\data_prep_tools\data_for_model\targets_glam_grav_annual_reg_iceland.csv'
+
+standalone_hug:
+  target_path: 'C:\Users\jz25104\OneDrive - University of Bristol\Desktop\data_prep_tools\data_for_model\targets_hug_20yr_pergla_iceland.csv'
+
+standalone_glam_altgrav:
+  target_path_alt: 'C:\Users\jz25104\OneDrive - University of Bristol\Desktop\data_prep_tools\data_for_model\targets_glam_alt_annual_reg_iceland.csv'
+  target_path_grav: 'C:\Users\jz25104\OneDrive - University of Bristol\Desktop\data_prep_tools\data_for_model\targets_glam_grav_annual_reg_iceland.csv'
+
+standalone_combined:
+  target_path_hug: 'C:\Users\jz25104\OneDrive - University of Bristol\Desktop\data_prep_tools\data_for_model\targets_hug_20yr_pergla_iceland.csv'
+  target_path_alt: 'C:\Users\jz25104\OneDrive - University of Bristol\Desktop\data_prep_tools\data_for_model\targets_glam_alt_annual_reg_iceland.csv'
+  target_path_grav: 'C:\Users\jz25104\OneDrive - University of Bristol\Desktop\data_prep_tools\data_for_model\targets_glam_grav_annual_reg_iceland.csv'
+
+## --- Input Information --- ##
+inp_ft_mode: "monthly_hydrological_nh" # one of: "monthly_hydrological_nh","monthly_hydrological_sh", "monthly_calendar", "annual_hydrological_nh", "annual_hydrological_sh", "annual_calendar"
+
+inp_ft_path: "C:\\Users\\jz25104\\OneDrive - University of Bristol\\Desktop\\data_prep_tools\\data_for_model\\input_feats_t2m_tp_ssrd_snsr_wind_snow_tminmax_ssrdminmax_snsrminmax_ndsi_1999_2021.csv"
+
+input_features: # Uncomment from below. IF writing afresh, choose from cenlon, cenlat, year, area_km2, zmin_m, zmax_m, zmed_m, slope_deg, aspect_deg, snowfall_sum, surface_net_solar_radiation_max, surface_net_solar_radiation_min, surface_net_solar_radiation_sum, surface_solar_radiation_downwards_max, surface_solar_radiation_downwards_min, surface_solar_radiation_downwards_sum, temperature_2m, temperature_2m_max, temperature_2m_min, total_precipitation_sum, u_component_of_wind_10m, v_component_of_wind_10m, NDSI
+  - "area_km2"
+  - "zmed_m"
+  - "slope_deg"
+  - "aspect_deg"
+  - "surface_solar_radiation_downwards_sum"
+  - "temperature_2m"
+  - "total_precipitation_sum"
+  - "NDSI"
+  # - "u_component_of_wind_10m"
+  # - "v_component_of_wind_10m"
+  # - "cenlon"
+  # - "cenlat"
+  # - "year"
+  # - "zmin_m"
+  # - "zmax_m"
+  # - "snowfall_sum"
+  # - "surface_net_solar_radiation_max"
+  # - "surface_net_solar_radiation_min"
+  # - "surface_net_solar_radiation_sum"
+  # - "surface_solar_radiation_downwards_max"
+  # - "surface_solar_radiation_downwards_min"
+  # - "temperature_2m_max"
+  # - "temperature_2m_min"
+
+## --- Validation Information --- ##
+# Note that this is implemented at the moment only for pretraining, hug (in glacier dimension only) and glam (in year dimension only)
+validation_mode: "random" # one of: "random", "blocking", "kfold_random", "kfold_blocking"
+validation_fraction: 0.2  # used if validation_mode is "random"
+num_folds: 5              # used if validation_mode is "kfold_random" or "kfold_blocking"
+blocking_perc: 0.1    # used if validation_mode is "blocking" as leave this much percent of glaciers and years out
+
+## --- Test Information --- ##
+test_mode: "blocking" # one of: "random", "blocking"
+test_fraction: 0.2  # used if test_mode is "random"
+blocking_perc_test: 0.1    # used if test_mode is "blocking" as leave this much percent of glaciers and years out
+
+## --- Model hyperparameters --- ##
+hidden_layer_size:
+  - 32
+  - 32
+solver: "adam"          # "lbfgs", "sgd", or "adam"
+learning_rate_init: 0.01
+max_iter: 1000
+batch_size: 128  # for mini-batch training with 'sgd' or 'adam' solver
+

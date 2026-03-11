@@ -1,0 +1,9 @@
+## Windows version
+# multirun_dir: "C:\\Users\\jz25104\\OneDrive - University of Bristol\\Desktop\\data_prep_tools\\multirun\\2025-11-22\\00-17-38" # The multirun subfolder with the date time of run of interest
+# output_dir: "C:\\Users\\jz25104\\OneDrive - University of Bristol\\Desktop\\data_prep_tools\\data_for_model" # Directory to save the combined input features csv. Mostly will be the data_for_model folder
+# output_name: "input_feats_t2m_tp_ssrd_snsr_wind_snow_tminmax_ssrdminmax_snsrminmax_ndsi_1999_2021.csv" # Keep this as input_feats_shortnames_of_inputs_startyr_endyr.csv
+
+## WSL version
+multirun_dir: "/home/ritu/data_prep_tools/multirun/2025-12-02/11-14-14" # The multirun subfolder with the date time of run of interest
+output_dir: "/home/ritu/data_prep_tools/data_for_model" # Directory to save the combined input features csv. Mostly will be the data_for_model folder
+output_name: "input_feats_t2m_tp_ssrd_wind_tminmaxstd_ssrdminmaxstd_deb_ndsi_ar_asp_slp_zmedminmax1999_2021.csv" # Keep this as input_feats_shortnames_of_inputs_startyr_endyr.csv

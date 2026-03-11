@@ -1,0 +1,16 @@
+rgi_reg: "06"
+out_folder: "C:\\Users\\jz25104\\OneDrive - University of Bristol\\Desktop\\data_prep_tools\\data_for_model"
+
+# Boolean values for whether the targets are to be generated
+oggm_compute: True
+glam_alt_compute: True
+glam_grav_compute: True
+hug_20yr_compute: True
+hug_roll_compute: True
+glam_inputs_compute: False
+
+# Params associated with target raw files
+oggm_base_url: "https://cluster.klima.uni-bremen.de/~oggm/gdirs/OGGM_v1.8.1/rgi60/"
+glambie_fld: "c:\\Users\\jz25104\\OneDrive - University of Bristol\\Desktop\\liquidice_data\\glambie\\GlaMBIE_Data_DOI_10.5904_wgms-glambie-2024-07"
+hug_rates_fld: "c:\\Users\\jz25104\\OneDrive - University of Bristol\\Desktop\\liquidice_data\\hug" #Complete this after arranging
+hug_roll_min: 10

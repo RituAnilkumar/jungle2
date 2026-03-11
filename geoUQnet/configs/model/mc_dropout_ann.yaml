@@ -1,0 +1,17 @@
+# MC Dropout ANN
+# Uses stochastic dropout at inference to estimate predictive uncertainty.
+# Supports both conformal types.
+#
+# Compatible conformal types: absolute_residuals, normalized_residuals
+
+name: mc_dropout_ann
+
+hidden_dims: [10, 10]
+dropout_p:   0.1        # must be > 0.0 for meaningful MC uncertainty
+
+# Number of stochastic forward passes at inference
+mc_samples: 200
+
+# Optional: swap in your own torch class.
+# Must accept (in_dim, hidden_dims, dropout_p) and contain nn.Dropout layers.
+# custom_class: mypackage.mymodule.MyNet

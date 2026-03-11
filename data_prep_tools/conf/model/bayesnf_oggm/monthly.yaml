@@ -1,0 +1,36 @@
+## w5e5 annual
+inp_dir: "/scratch/b5at/ranil.b5at/data_prep_tools/data_for_model/w5e5runs/monthly/" # don't use training /
+## era5l annual annminmax
+# inp_dir: "/scratch/b5at/ranil.b5at/data_prep_tools/data_for_model/data_for_model_annminmax/"
+reg_subdir: "r06"
+
+model_nlayers: 1
+model_nhidden: 16
+model_freq: "Y"
+model_nepochs: 100000
+model_nensemble: 15
+# NOTE YEAR HAS TO BE THE FIRST FEATURE IN THE LIST. GET THE FULL FT LIST FROM inp_dir/reg_subdir any csv file. Below in rm_fts, INCLUDE ONLY THOSE YOU DONT WANT. This is easier for hydra multiruns. In standardize_fts I include all but the year.
+
+model_ftcols: [
+    'year', 'CenLon', 'CenLat', 'Slope', 'Area', 'Aspect',
+    'Zmed', 'Zmin', 'Zmax',
+    'tas_mean_01', 'tas_mean_02', 'tas_mean_03', 'tas_mean_04',
+    'tas_mean_05', 'tas_mean_06', 'tas_mean_07', 'tas_mean_08',
+    'tas_mean_09', 'tas_mean_10', 'tas_mean_11', 'tas_mean_12',
+    'rsds_mean_01', 'rsds_mean_02', 'rsds_mean_03', 'rsds_mean_04',
+    'rsds_mean_05', 'rsds_mean_06', 'rsds_mean_07', 'rsds_mean_08',
+    'rsds_mean_09', 'rsds_mean_10', 'rsds_mean_11', 'rsds_mean_12',
+    'pr_monthly_total_01', 'pr_monthly_total_02', 'pr_monthly_total_03',
+    'pr_monthly_total_04', 'pr_monthly_total_05', 'pr_monthly_total_06',
+    'pr_monthly_total_07', 'pr_monthly_total_08', 'pr_monthly_total_09',
+    'pr_monthly_total_10', 'pr_monthly_total_11', 'pr_monthly_total_12'
+]
+model_targcols: "mass_balance"
+
+rm_fts: []  # remove features from model_ftcols if any
+
+model_obsmode: "NORMAL"
+use_stdscalar: false
+seasonality_periods: [5,10]
+num_seasonal_harmonics: [2,4]
+model_traintype: "VI" # choose from "MAP", "VI" and "MLE"

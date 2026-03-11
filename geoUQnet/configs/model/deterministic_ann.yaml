@@ -1,0 +1,9 @@
+# Deterministic feed-forward ANN
+# Supports absolute_residuals conformal only (no predictive std output).
+#
+# Compatible conformal types: absolute_residuals
+
+name: deterministic_ann
+
+hidden_dims: [10, 10]   # list of hidden layer widths
+dropout_p:   0.0        # keep 0.0 for fully deterministic

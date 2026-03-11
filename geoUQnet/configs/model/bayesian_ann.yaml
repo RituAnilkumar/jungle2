@@ -1,0 +1,24 @@
+# Bayesian ANN — mean-field SVI via Pyro (AutoDiagonalNormal guide).
+# Posterior predictive samples provide both aleatoric + epistemic uncertainty.
+# Supports both conformal types.
+#
+# Compatible conformal types: absolute_residuals, normalized_residuals
+# Requires: pip install pyro-ppl
+
+name: bayesian_ann
+
+hidden_dims:  [10, 10]
+prior_scale:  1.0       # std-dev of Normal weight/bias priors
+
+# Posterior predictive samples drawn at inference time
+vi_samples: 500
+
+# ── SVI-specific training overrides ───────────────────────────────────────
+# These are merged with the shared training block in config.yaml.
+# Bayesian training typically needs more epochs than a deterministic ANN.
+training:
+  lr:             1.0e-3
+  epochs:         1000
+  batch_size:     256     # DataLoader batch size (same key as shared)
+  n_samples_eval: 50      # posterior samples used during val MSE check
+  seed:           ${seed}

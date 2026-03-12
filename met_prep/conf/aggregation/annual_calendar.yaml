@@ -1,0 +1,7 @@
+# Annual calendar-year aggregation (Jan-Dec)
+# Output: one value per grid cell per year.
+
+name: annual_calendar
+
+# Statistics for temperature per year. Precip and radiation summed.
+temp_stats: [mean, min, max, std]

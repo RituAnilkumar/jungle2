@@ -1,0 +1,9 @@
+# Monthly aggregation
+# Resamples daily/hourly input to monthly statistics.
+# Output: one value per grid cell per month.
+
+name: monthly
+
+# Statistics to compute for temperature.
+# Precipitation and radiation are always summed to monthly totals.
+temp_stats: [mean, min, max, median, std]

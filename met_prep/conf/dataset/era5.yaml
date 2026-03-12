@@ -1,0 +1,32 @@
+# ERA5 dataset descriptor
+# Data is assumed to be already downloaded locally as NetCDF or GRIB files.
+# Download via CDS API: https://cds.climate.copernicus.eu
+
+name: era5
+
+# Glob pattern or list of file paths to your ERA5 files.
+# Supports wildcards, e.g. "/data/era5/era5_*.nc"
+input_paths:
+  - /scratch/b5at/ranil.b5at/era5/era5_*.nc
+
+# File format: "netcdf" or "grib". Both are opened with xarray.
+file_format: netcdf
+
+# Variable names as they appear in the file (check with xr.open_dataset().data_vars).
+# Add or remove variables as needed.
+variables:
+  temperature:
+    name: t2m           # 2m temperature
+    units: K
+  precipitation:
+    name: tp            # total precipitation
+    units: m            # ERA5 precip is in metres; converted to mm in aggregators.py
+  radiation:
+    name: ssrd          # surface solar radiation downwards
+    units: "J m-2"
+
+# xarray open_mfdataset chunking (tune to your HPC memory/analysis pattern)
+chunks:
+  time: 12
+  latitude: 181
+  longitude: 360

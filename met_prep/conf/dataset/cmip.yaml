@@ -1,0 +1,35 @@
+# CMIP dataset descriptor (e.g. CMIP6 scenario runs from CDS)
+# Data is assumed to be already downloaded locally as NetCDF files.
+
+name: cmip
+
+# Glob pattern or list of file paths to your CMIP files.
+input_paths:
+  temperature:
+    - /scratch/b5at/ranil.b5at/cmip6/tas_*.nc
+  precipitation:
+    - /scratch/b5at/ranil.b5at/cmip6/pr_*.nc
+  radiation:
+    - /scratch/b5at/ranil.b5at/cmip6/rsds_*.nc
+
+file_format: netcdf
+
+# Variable names as they appear in the CMIP files (standard CMIP conventions).
+variables:
+  temperature:
+    name: tas
+    units: K
+  precipitation:
+    name: pr
+    units: "kg m-2 s-1"
+  radiation:
+    name: rsds
+    units: "W m-2"
+
+# Model/scenario identifier — used in output filename for traceability.
+scenario: ssp585   # e.g. historical, ssp126, ssp245, ssp585
+
+chunks:
+  time: 12
+  lat: 180
+  lon: 360

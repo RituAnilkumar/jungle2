@@ -1,0 +1,24 @@
+# met_prep — root config
+#
+# Aggregates downloaded NetCDF/GRIB climate data into monthly, seasonal,
+# or annual outputs and writes them as NetCDF files.
+#
+# IMPORTANT: Run met_prep *before* gla_prep.
+# gla_prep samples from met_prep NetCDF outputs via xarray nearest-neighbour.
+# Ensure the aggregation level selected here matches the met_input_freq
+# set in gla_prep/conf/region/<your_region>.yaml.
+#
+# Override any group from CLI:
+#   python main.py dataset=w5e5 aggregation=annual_hydro
+#   python main.py dataset=era5 aggregation=monthly output_path=/my/path
+#   python main.py -m aggregation=monthly,seasonal,annual_hydro   # multirun
+
+defaults:
+  - dataset: era5
+  - aggregation: seasonal
+  - _self_
+
+# Output path for aggregated NetCDF files.
+# A descriptive filename is generated automatically:
+#   <output_path>/<dataset_name>_<aggregation_name>.nc
+output_path: /scratch/b5at/ranil.b5at/met_prep/outputs

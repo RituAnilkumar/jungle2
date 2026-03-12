@@ -1,0 +1,23 @@
+# Annual hydrological-year aggregation
+#
+# NH: Oct-Sep (year label = the year in which Sep falls)
+# SH: Apr-Mar (year label = the year in which Mar falls)
+#
+# Hemisphere is inferred from grid latitude (lat > 0 → NH) unless overridden.
+
+name: annual_hydro
+
+# Set to null to infer hemisphere per grid cell from latitude.
+# Or set explicitly to "NH" or "SH".
+hemisphere: null
+
+# NH hydrological year: starts October, ends September.
+nh:
+  start_month: 10   # October
+
+# SH hydrological year: starts April, ends March.
+sh:
+  start_month: 4    # April
+
+# Statistics for temperature per hydrological year. Precip and radiation summed.
+temp_stats: [mean, min, max, std]

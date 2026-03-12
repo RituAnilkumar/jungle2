@@ -1,0 +1,35 @@
+# W5E5 dataset descriptor
+# Data is assumed to be already downloaded locally as NetCDF files.
+# Download: https://data.isimip.org/10.48364/ISIMIP.982724
+
+name: w5e5
+
+# Glob pattern or list of file paths to your W5E5 files.
+# W5E5 is often split by variable and decade — list all relevant files.
+input_paths:
+  temperature:
+    - /scratch/b5at/ranil.b5at/w5e5/tas_W5E5v2.0_*.nc
+  precipitation:
+    - /scratch/b5at/ranil.b5at/w5e5/pr_W5E5v2.0_*.nc
+  radiation:
+    - /scratch/b5at/ranil.b5at/w5e5/rsds_W5E5v2.0_*.nc
+
+file_format: netcdf
+
+# Variable names as they appear in the W5E5 files.
+variables:
+  temperature:
+    name: tas           # near-surface air temperature
+    units: K
+  precipitation:
+    name: pr            # precipitation flux
+    units: "kg m-2 s-1" # converted to mm/day then mm/month in aggregators.py
+  radiation:
+    name: rsds          # surface downwelling shortwave radiation
+    units: "W m-2"
+
+# xarray open_mfdataset chunking
+chunks:
+  time: 31
+  lat: 360
+  lon: 720

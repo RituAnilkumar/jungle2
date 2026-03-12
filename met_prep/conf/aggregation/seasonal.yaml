@@ -1,0 +1,26 @@
+# Seasonal aggregation — ablation and accumulation seasons
+#
+# Hemisphere is inferred automatically from grid latitude (lat > 0 → NH).
+# Override per-hemisphere months below if needed for your region.
+#
+# NH defaults: ablation May-Sep, accumulation Oct-Apr
+# SH defaults: ablation Nov-Mar, accumulation Apr-Oct
+
+name: seasonal
+
+# Set to null to infer hemisphere per grid cell from latitude.
+# Or set explicitly to "NH" or "SH" for a single-hemisphere dataset.
+hemisphere: null
+
+# NH season month definitions (1-indexed). Override if needed.
+nh:
+  ablation_months:     [5, 6, 7, 8, 9]               # May-Sep
+  accumulation_months: [10, 11, 12, 1, 2, 3, 4]      # Oct-Apr
+
+# SH season month definitions. Override if needed.
+sh:
+  ablation_months:     [11, 12, 1, 2, 3]              # Nov-Mar
+  accumulation_months: [4, 5, 6, 7, 8, 9, 10]        # Apr-Oct
+
+# Statistics for temperature per season. Precip and radiation summed.
+temp_stats: [mean]

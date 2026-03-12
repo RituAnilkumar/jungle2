@@ -1,0 +1,14 @@
+# WGMS annual mass balance target
+# Source: WGMS Fluctuations of Glaciers database (FoG)
+# https://wgms.ch/data_databaseversions/
+
+name: wgms
+
+# Path to your WGMS CSV file.
+data_path: /scratch/b5at/ranil.b5at/wgms/wgms_fog_annual_mb.csv
+
+# Column name mappings — adjust to match your WGMS file's column names.
+rgi_id_col:   RGI_ID
+year_col:     YEAR
+mb_col:       ANNUAL_BALANCE       # mm w.e. yr-1
+mb_uncertainty_col: ANNUAL_BALANCE_UNC   # set to null if not available

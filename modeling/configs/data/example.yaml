@@ -1,0 +1,38 @@
+# Data config — points to gla_prep output CSVs
+#
+# To add a new dataset, create another file in configs/data/ and
+# switch via: python main.py data=<your_file>
+#
+# main_features_path is always required.
+# glambie_targets_path and temporal_avg_targets_path are only required
+# when using loss=glambie, temporal_avg, or glambie_and_temporal_avg.
+# A startup check in data_prep.py will raise a clear error if they are
+# missing for the selected loss.
+
+main_features_path: /scratch/b5at/ranil.b5at/gla_prep/outputs/main_features_r06.csv
+
+# Optional auxiliary target paths (required for constrained losses):
+glambie_targets_path: null
+temporal_avg_targets_path: null
+
+feature_cols:
+  - tas_abl_mean
+  - tas_acc_mean
+  - pr_abl_sum
+  - pr_acc_sum
+  - rsds_abl_sum
+  - rsds_acc_sum
+  - CenLat
+  - CenLon
+  - Area
+  - Zmed
+  - Slope
+  - Aspect
+  - Zmin
+  - Zmax
+
+target_col: mass_balance
+
+# Column identifying each glacier — used by blocked validation splits.
+glacier_id_col: rgi_id
+year_col: year

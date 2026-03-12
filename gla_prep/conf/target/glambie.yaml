@@ -1,0 +1,19 @@
+# GLAMBIE regional mass balance target
+# Source: GLAMBIE (Glacier Mass Balance Intercomparison Exercise)
+# https://glambie.org
+#
+# GLAMBIE provides annual regional mass balance sums (not per-glacier).
+# This target produces glambie_targets.csv alongside main_features.csv.
+# Use in conjunction with loss=glambie or loss=glambie_and_temporal_avg
+# in the modeling directory.
+
+name: glambie
+
+# Path to your GLAMBIE CSV file.
+data_path: /scratch/b5at/ranil.b5at/glambie/glambie_regional_annual.csv
+
+# Column name mappings — adjust to match your GLAMBIE file's column names.
+region_col:       region        # RGI region identifier (e.g. "06" or "RGI06")
+year_col:         year
+regional_sum_col: mass_balance  # Gt yr-1 or mm w.e. yr-1 — keep units consistent
+uncertainty_col:  uncertainty

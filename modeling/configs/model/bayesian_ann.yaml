@@ -1,0 +1,20 @@
+# Bayesian ANN via Pyro SVI
+# Mean-field variational inference with Normal weight priors.
+# Native posterior uncertainty — conformal=none recommended.
+#
+# Compatible conformal types: absolute_residuals, normalized_residuals, none
+
+name: bayesian_ann
+
+hidden_dims:  [64, 64]
+prior_scale:  1.0
+
+# Posterior samples drawn during inference
+vi_samples: 500
+
+# Bayesian training needs more epochs and a separate lr from the shared block.
+# These keys override the shared training block in config.yaml for BNN runs only.
+training:
+  lr:             1.0e-3
+  epochs:         1000
+  n_samples_eval: 50     # posterior samples used at validation time

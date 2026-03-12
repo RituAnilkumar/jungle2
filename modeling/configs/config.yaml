@@ -1,0 +1,42 @@
+# modeling — root config
+#
+# Trains and evaluates neural network models with uncertainty quantification
+# on glacier mass balance data produced by gla_prep.
+#
+# Override any group from the CLI:
+#   python main.py model=bayesian_ann conformal=normalized_residuals
+#   python main.py model=bayesnf loss=standard conformal=none validation=blocked
+#   python main.py data=my_region training.epochs=1000
+#   python main.py -m model=mc_dropout_ann,bayesian_ann conformal=absolute_residuals,none
+#
+# NOTE: For loss=glambie, temporal_avg, or glambie_and_temporal_avg,
+# you must also set a pretrained_model_path in the loss config
+# (pointing to an OGGM-pretrained checkpoint) and ensure the corresponding
+# glambie_targets_path / temporal_avg_targets_path are set in the data config.
+
+defaults:
+  - data: example
+  - model: mc_dropout_ann
+  - loss: standard
+  - validation: random
+  - conformal: absolute_residuals
+  - _self_
+
+seed: 42
+
+# Train/val/cal/test split sizes (used for random validation only).
+# For blocked validation, see configs/validation/blocked.yaml.
+splits:
+  test_size: 0.15
+  cal_size:  0.20
+  val_size:  0.15
+  seed: ${seed}
+
+# Shared training hyperparameters.
+# Models that don't use lr (e.g. bayesnf) ignore these keys.
+# Model-specific overrides can be placed in the model yaml.
+training:
+  lr:           1.0e-3
+  weight_decay: 0.0
+  epochs:       500
+  batch_size:   256

@@ -1,0 +1,5 @@
+# Random validation split
+# Splits data randomly into train / val / cal / test sets.
+# Split fractions are controlled by cfg.splits in config.yaml.
+
+type: random

@@ -1,0 +1,4 @@
+# Standard loss — MSE on per-glacier annual mass balance only.
+# No auxiliary targets required.
+
+type: standard

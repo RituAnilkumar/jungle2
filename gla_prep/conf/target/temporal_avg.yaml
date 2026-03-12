@@ -1,0 +1,27 @@
+# Temporal moving-window average mass balance target
+#
+# Computes a moving window of average mass balance per glacier over the
+# specified window_years. Source data is per-glacier annual mass balance
+# (e.g. from OGGM or WGMS).
+#
+# Produces two outputs:
+#   main_features.csv      — per-glacier annual climate+RGI features (no MB column)
+#   glambie_targets.csv    — annual regional sums (if glambie_path is provided)
+#   temporal_avg_targets.csv — (rgi_id, start_date, end_date, avg_mb, uncertainty)
+#
+# Use with loss=temporal_avg or loss=glambie_and_temporal_avg in modeling.
+
+name: temporal_avg
+
+# Source of per-glacier annual mass balance for computing the averages.
+# Path to a CSV with columns: rgi_id, year, mass_balance, [uncertainty]
+source_mb_path: /scratch/b5at/ranil.b5at/gla_prep/outputs/main_features_oggm.csv
+source_mb_col: mass_balance
+source_uncertainty_col: null   # set to column name if available
+
+# Moving window size in years.
+window_years: 20
+
+# Optional: path to GLAMBIE regional sums CSV (same format as glambie.yaml).
+# Set to null if not using the glambie loss concurrently.
+glambie_path: null

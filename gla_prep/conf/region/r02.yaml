@@ -1,0 +1,20 @@
+# Region 02 — WesternCanadaUS
+# RGI region code: 02
+
+rgi_code: "02"
+
+# Path to RGI attribute CSV or SHP for this region.
+rgi_attr_path: /scratch/b5at/ranil.b5at/rgi/nsidc0770_00.rgi60.attribs/02_rgi60_WesternCanadaUS.csv
+
+# Format: "csv" or "shp"
+rgi_format: csv
+
+# Hemisphere — set to null to infer automatically from CenLat.
+hemisphere: NH
+
+# Path to met_prep NetCDF output to sample climate from.
+met_input_path: /scratch/b5at/ranil.b5at/met_prep/outputs/era5_seasonal.nc
+
+# Temporal aggregation level of the met_input_path file.
+# Options: "monthly", "seasonal", "annual_calendar", "annual_hydro"
+met_input_freq: seasonal

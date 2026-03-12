@@ -1,0 +1,18 @@
+# Constrained loss — standard MSE + temporal moving-window average term.
+#
+# Requires:
+#   - data.temporal_avg_targets_path to be set and file to exist
+#   - pretrained_model_path pointing to an OGGM-pretrained checkpoint
+#
+# The temporal average term groups per-glacier predictions over each
+# time window defined in temporal_avg_targets.csv and computes MSE
+# against the average mass balance for that window.
+
+type: temporal_avg
+
+# Weight of the temporal average auxiliary loss term relative to primary MSE.
+temporal_weight: 0.5
+
+# Path to OGGM-pretrained model checkpoint. Set to null to train from scratch.
+# WARNING: Architecture must match the checkpoint exactly.
+pretrained_model_path: null

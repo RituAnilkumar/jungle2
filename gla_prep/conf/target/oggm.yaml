@@ -1,0 +1,20 @@
+# OGGM fixed-geometry mass balance target
+#
+# Source: OGGM L5 fixed-geometry mass balance summary CSVs.
+# Download with:
+#   wget -r -np -nH --cut-dirs=10 -A "*fixed_geometry_mass_balance_*.csv" \
+#     https://cluster.klima.uni-bremen.de/~oggm/gdirs/oggm_v1.6/L3-L5_files/\
+#     2023.3/elev_bands/W5E5_spinup/RGI62/b_160/L4/summary/
+
+name: oggm
+
+# Directory containing fixed_geometry_mass_balance_<NN>.csv files.
+summary_dir: /scratch/b5at/ranil.b5at/met_raw/oggm_summary/L5/summary
+
+# Only keep years >= min_year (OGGM spinup before 1979 is unreliable).
+min_year: 1979
+
+# Outputs per-glacier annual mass balance column in main_features.csv.
+# Column names in the output CSV.
+mb_col: mass_balance
+mb_uncertainty_col: null   # OGGM fixed-geometry has no uncertainty; set to null

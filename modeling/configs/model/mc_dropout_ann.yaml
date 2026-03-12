@@ -1,0 +1,12 @@
+# MC Dropout ANN
+# Uses stochastic dropout at inference to estimate predictive uncertainty.
+#
+# Compatible conformal types: absolute_residuals, normalized_residuals, none
+
+name: mc_dropout_ann
+
+hidden_dims: [64, 64]
+dropout_p:   0.1       # must be > 0 for meaningful MC uncertainty
+
+# Number of stochastic forward passes at inference
+mc_samples: 200

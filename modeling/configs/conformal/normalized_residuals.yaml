@@ -1,0 +1,9 @@
+# Normalized residual nonconformity scores
+# Requires a predictive std estimate from the model.
+# Produces adaptive-width intervals (wider where model is more uncertain).
+#
+# Compatible models: mc_dropout_ann, deep_ensemble_ann, bayesian_ann
+
+type: normalized_residuals
+alpha: 0.1       # miscoverage level → 90% marginal coverage
+eps:   1.0e-6    # small constant for numerical stability

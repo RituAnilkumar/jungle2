@@ -1,0 +1,8 @@
+# Conformal prediction disabled.
+# Model outputs are returned directly without calibration.
+#
+# For probabilistic models (mc_dropout_ann, deep_ensemble_ann, bayesian_ann,
+# bayesnf), native uncertainty estimates (mean + std / quantiles) are returned.
+# For deterministic_ann, only point predictions are returned (no intervals).
+
+type: none

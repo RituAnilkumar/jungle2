@@ -1,0 +1,42 @@
+# gla_prep — root config
+#
+# Prepares glacier mass balance targets, samples climate features from
+# met_prep NetCDF outputs, merges RGI static attributes, and writes
+# ready-to-use CSV files for the modeling directory.
+#
+# Output CSVs (paths set via output_path below):
+#
+#   main_features.csv        — always produced
+#                              one row per (glacier, year)
+#                              columns: rgi_id, year, [RGI static attrs],
+#                              [climate features], [annual_mb, mb_uncertainty]
+#                              (last two cols present only if target includes
+#                               per-glacier annual mass balance: oggm or wgms)
+#
+#   glambie_targets.csv      — produced only if target=glambie or temporal_avg
+#                              columns: region, year, regional_sum, uncertainty
+#
+#   temporal_avg_targets.csv — produced only if target=temporal_avg
+#                              columns: rgi_id, start_date, end_date, avg_mb, uncertainty
+#
+# Override any group from CLI:
+#   python main.py target=wgms region=r06
+#   python main.py target=temporal_avg region=r01 output_path=/my/outputs
+#   python main.py -m region=r01,r02,r03,r04,r05,r06   # multirun over regions
+
+defaults:
+  - target: oggm
+  - region: r06
+  - _self_
+
+output_path: /scratch/b5at/ranil.b5at/gla_prep/outputs
+
+# RGI static attribute columns to include in main_features.csv.
+# rgi_id, CenLat, CenLon are always included regardless of this list.
+rgi_cols:
+  - Area
+  - Zmin
+  - Zmax
+  - Zmed
+  - Slope
+  - Aspect

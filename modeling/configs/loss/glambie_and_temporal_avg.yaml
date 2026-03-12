@@ -1,0 +1,23 @@
+# Constrained loss — standard MSE + GLAMBIE regional sum + temporal average.
+#
+# Requires:
+#   - data.glambie_targets_path to be set and file to exist
+#   - data.temporal_avg_targets_path to be set and file to exist
+#   - pretrained_model_path pointing to an OGGM-pretrained checkpoint
+#
+# Both auxiliary terms are weighted and combined with the primary MSE:
+#   total_loss = primary_mse
+#              + glambie_weight  × glambie_regional_mse
+#              + temporal_weight × temporal_avg_mse
+
+type: glambie_and_temporal_avg
+
+glambie_weight:  0.5
+temporal_weight: 0.5
+
+# Column in main_features.csv for region grouping (null = auto-derive from rgi_id).
+region_col: null
+
+# Path to OGGM-pretrained model checkpoint. Set to null to train from scratch.
+# WARNING: Architecture must match the checkpoint exactly.
+pretrained_model_path: null

@@ -1,0 +1,19 @@
+# Custom mass balance target
+# Use this when you have your own mass balance data that doesn't fit
+# the OGGM / WGMS / GLAMBIE formats.
+
+name: custom
+
+# Path to your CSV file.
+data_path: /path/to/your/mass_balance.csv
+
+# Column name mappings.
+rgi_id_col:          rgi_id
+year_col:            year
+mb_col:              mass_balance       # per-glacier annual MB
+mb_uncertainty_col:  null              # set to column name if available
+
+# Set to true if this data is region-level (like GLAMBIE) rather than per-glacier.
+# If true, produces glambie_targets.csv instead of a MB column in main_features.csv.
+is_regional: false
+region_col:  null   # required if is_regional: true

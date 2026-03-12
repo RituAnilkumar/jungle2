@@ -1,0 +1,11 @@
+# Deterministic ANN
+# Standard feed-forward ANN. No native uncertainty.
+# Use with conformal=absolute_residuals for prediction intervals.
+# conformal=none gives point predictions only.
+#
+# Compatible conformal types: absolute_residuals, none
+
+name: deterministic_ann
+
+hidden_dims: [64, 64]
+dropout_p:   0.0

@@ -1,0 +1,26 @@
+# Constrained loss — standard MSE + GLAMBIE regional sum term.
+#
+# Requires:
+#   - data.glambie_targets_path to be set and file to exist
+#   - pretrained_model_path pointing to an OGGM-pretrained checkpoint
+#
+# The GLAMBIE term groups per-glacier predictions by RGI region,
+# sums them, and computes MSE against the GLAMBIE regional sum targets.
+#
+# Column in glambie_targets.csv used to group predictions:
+#   region_col must match a column in main_features.csv that identifies
+#   each glacier's RGI region (e.g. "rgi_region" or derived from rgi_id).
+
+type: glambie
+
+# Weight of the GLAMBIE auxiliary loss term relative to the primary MSE.
+glambie_weight: 0.5
+
+# Column in main_features.csv that identifies the glacier's RGI region.
+# If not present, it will be derived from the first 8 characters of rgi_id.
+region_col: null   # set to column name if available, otherwise null for auto-derive
+
+# Path to OGGM-pretrained model checkpoint. Set to null to train from scratch.
+# WARNING: If set, the model architecture in configs/model/ must match the
+# checkpoint exactly. A mismatch will raise a clear error at startup.
+pretrained_model_path: null

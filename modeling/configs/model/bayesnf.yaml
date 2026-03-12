@@ -1,0 +1,32 @@
+# BayesNF — Bayesian Neural Field (JAX/Flax-based spatiotemporal model)
+# Native distributional output (MAP/VI/MLE). conformal=none is the default.
+# Does not use the shared training.lr / training.epochs block.
+#
+# Compatible conformal types: none (native quantiles used directly)
+# Requires: pip install bayesnf cloudpickle jax
+
+name: bayesnf
+
+# Network architecture
+model_nlayers: 2
+model_nhidden: 64
+
+# Inference mode: "MAP", "VI", or "MLE"
+model_traintype: VI
+
+# BayesNF-specific training
+model_nepochs:    5000
+model_nensemble:  10     # ensemble size (number of particles for VI)
+
+# Time frequency passed to BayesNF ("Y" for annual, "M" for monthly)
+model_freq: Y
+
+# Seasonality — set to [] to disable
+seasonality_periods:    [5, 10]
+num_seasonal_harmonics: [2, 4]
+
+# Quantiles to report in output CSVs
+output_quantiles: [0.025, 0.5, 0.975]
+
+# NOTE: year must be the first feature in feature_cols (set in data config).
+# BayesNF treats it as the time index.

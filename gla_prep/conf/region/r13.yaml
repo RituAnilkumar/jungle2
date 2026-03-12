@@ -1,0 +1,20 @@
+# Region 13 — CentralAsia
+# RGI region code: 13
+
+rgi_code: "13"
+
+# Path to RGI attribute CSV or SHP for this region.
+rgi_attr_path: /scratch/b5at/ranil.b5at/rgi/nsidc0770_00.rgi60.attribs/13_rgi60_CentralAsia.csv
+
+# Format: "csv" or "shp"
+rgi_format: csv
+
+# Hemisphere — set to null to infer automatically from CenLat.
+hemisphere: NH
+
+# Path to met_prep NetCDF output to sample climate from.
+met_input_path: /scratch/b5at/ranil.b5at/met_prep/outputs/era5_seasonal.nc
+
+# Temporal aggregation level of the met_input_path file.
+# Options: "monthly", "seasonal", "annual_calendar", "annual_hydro"
+met_input_freq: seasonal

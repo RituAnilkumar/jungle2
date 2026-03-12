@@ -1,0 +1,20 @@
+# Region 19 — AntarcticSubantarctic
+# RGI region code: 19
+
+rgi_code: "19"
+
+# Path to RGI attribute CSV or SHP for this region.
+rgi_attr_path: /scratch/b5at/ranil.b5at/rgi/nsidc0770_00.rgi60.attribs/19_rgi60_AntarcticSubantarctic.csv
+
+# Format: "csv" or "shp"
+rgi_format: csv
+
+# Hemisphere — set to null to infer automatically from CenLat.
+hemisphere: SH
+
+# Path to met_prep NetCDF output to sample climate from.
+met_input_path: /scratch/b5at/ranil.b5at/met_prep/outputs/era5_seasonal.nc
+
+# Temporal aggregation level of the met_input_path file.
+# Options: "monthly", "seasonal", "annual_calendar", "annual_hydro"
+met_input_freq: seasonal

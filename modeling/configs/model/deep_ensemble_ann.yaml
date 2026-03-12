@@ -1,0 +1,12 @@
+# Deep Ensemble ANN
+# Trains M independent members; member spread gives epistemic uncertainty.
+#
+# Compatible conformal types: absolute_residuals, normalized_residuals, none
+
+name: deep_ensemble_ann
+
+hidden_dims: [64, 64]
+dropout_p:   0.0       # optionally add within-member dropout
+
+n_members:  5
+base_seed:  999        # member i trained with seed = base_seed + i

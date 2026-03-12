@@ -1,0 +1,27 @@
+# Blocked validation split — LOGO / LOYO / LOYGO
+#
+# Holds out a fraction of glaciers (LOGO) and a fraction of years (LOYO).
+# The intersection (held-out glacier AND held-out year) forms the LOYGO set
+# and is removed from both LOGO and LOYO to avoid double-counting.
+#
+# Final partitions (written to the Hydra output directory):
+#   train.csv    — glaciers NOT held out AND years NOT held out
+#   logo.csv     — held-out glaciers × non-held-out years
+#   loyo.csv     — non-held-out glaciers × held-out years
+#   loygo.csv    — held-out glaciers × held-out years (hardest generalisation)
+#   for_preds.csv — full dataset without target column (for full-coverage prediction)
+#
+# held_out_glaciers.txt and held_out_years.txt are also saved for reproducibility.
+#
+# model_eval.py reports metrics for all three test sets (logo, loyo, loygo).
+
+type: blocked
+
+# Fraction of unique glaciers to hold out for LOGO.
+holdout_glacier_frac: 0.10
+
+# Fraction of unique years to hold out for LOYO.
+holdout_year_frac: 0.10
+
+# Random seed for holdout selection (independent from cfg.seed).
+split_seed: 42

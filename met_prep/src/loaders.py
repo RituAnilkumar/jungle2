@@ -15,6 +15,7 @@ import logging
 from pathlib import Path
 
 import glob as _glob
+import warnings
 import xarray as xr
 from omegaconf import DictConfig, OmegaConf
 
@@ -42,17 +43,45 @@ def _resolve_paths(pattern_or_list) -> list[str]:
     return paths
 
 
-def _open_mfdataset(paths: list[str], engine: str, chunks: dict) -> xr.Dataset:
+def _open_nc(paths: list[str], chunks: dict) -> xr.Dataset:
+    # parallel=False: avoids HDF5 thread-safety failures on Lustre / shared filesystems
     return xr.open_mfdataset(
         paths,
         combine="by_coords",
-        parallel=True,
+        parallel=False,
         chunks=chunks,
         data_vars="minimal",
         coords="minimal",
         compat="override",
-        engine=engine,
+        engine="netcdf4",
     )
+
+
+def _open_grib(paths: list[str], chunks: dict) -> xr.Dataset:
+    # xr.open_mfdataset with engine='cfgrib' silently drops variables that live in
+    # secondary GRIB message groups (e.g. t2m vs. u10/v10).  cfgrib.open_datasets()
+    # returns one Dataset per message group; we merge within each file then concat
+    # across files along the time dimension.
+    import cfgrib
+    per_file = []
+    for path in paths:
+        with warnings.catch_warnings():
+            warnings.filterwarnings("ignore", category=FutureWarning, module="cfgrib")
+            dsets = cfgrib.open_datasets(path)
+        if not dsets:
+            log.warning("cfgrib found no datasets in: %s", path)
+            continue
+        per_file.append(xr.merge(dsets, compat="override", join="override"))
+    if not per_file:
+        raise ValueError("No GRIB data could be loaded from: %s" % paths)
+    ds = xr.concat(per_file, dim="time") if len(per_file) > 1 else per_file[0]
+    return ds.chunk(chunks)
+
+
+def _open_files(paths: list[str], engine: str, chunks: dict) -> xr.Dataset:
+    if engine == "cfgrib":
+        return _open_grib(paths, chunks)
+    return _open_nc(paths, chunks)
 
 
 def load_dataset(cfg: DictConfig) -> xr.Dataset:
@@ -89,7 +118,7 @@ def load_dataset(cfg: DictConfig) -> xr.Dataset:
         for role, pattern in inp.items():
             paths = _resolve_paths(pattern)
             log.info("Loading %s (%d file(s)): %s …", role, len(paths), paths[0])
-            ds = _open_mfdataset(paths, engine, chunks)
+            ds = _open_files(paths, engine, chunks)
             # Rename to standard name from config
             raw_name = cfg.variables[role].name
             if raw_name in ds:
@@ -101,7 +130,7 @@ def load_dataset(cfg: DictConfig) -> xr.Dataset:
     # ── Single-file layout (ERA5/CMIP style) ──────────────────────────────
     paths = _resolve_paths(inp)
     log.info("Loading dataset (%d file(s)): %s …", len(paths), paths[0])
-    ds = _open_mfdataset(paths, engine, chunks)
+    ds = _open_files(paths, engine, chunks)
 
     # Keep only the configured variables
     keep = [v.name for v in cfg.variables.values()]

@@ -85,7 +85,7 @@ def aggregate_monthly(ds: xr.Dataset, dataset_cfg: DictConfig, agg_cfg: DictConf
             monthly_sum = da.resample(time="MS").sum("time").rename(f"{vname}_monthly_sum")
             results.append(monthly_sum.to_dataset())
 
-    return xr.merge(results, compat="override")
+    return xr.merge(results, compat="override", join="outer")
 
 
 # ─────────────────────────── Seasonal ────────────────────────────────────────
@@ -178,7 +178,7 @@ def aggregate_seasonal(ds: xr.Dataset, dataset_cfg: DictConfig, agg_cfg: DictCon
                 name = f"{vname}_{season}_sum"
                 results.append(grp.sum("time").rename(name).to_dataset())
 
-    return xr.merge(results, compat="override")
+    return xr.merge(results, compat="override", join="outer")
 
 
 # ─────────────────────────── Annual calendar ──────────────────────────────────
@@ -207,7 +207,7 @@ def aggregate_annual_calendar(ds: xr.Dataset, dataset_cfg: DictConfig, agg_cfg: 
             annual_sum = da.resample(time="YS").sum("time").rename(f"{vname}_annual_sum")
             results.append(annual_sum.to_dataset())
 
-    return xr.merge(results, compat="override")
+    return xr.merge(results, compat="override", join="outer")
 
 
 # ─────────────────────────── Annual hydrological ─────────────────────────────
@@ -226,6 +226,11 @@ def aggregate_annual_hydro(ds: xr.Dataset, dataset_cfg: DictConfig, agg_cfg: Dic
     hemisphere = agg_cfg.get("hemisphere", None)
     hem        = hemisphere if hemisphere and hemisphere.upper() in ("NH", "SH") else "NH"
 
+    if hemisphere is None:
+        log.warning(
+            "hemisphere=null in config: applying NH hydrological year globally. "
+            "For SH glaciers, set hemisphere: SH or run with -m hemisphere=NH,SH."
+        )
     start_month = get_hydro_start_month(hem, agg_cfg)
     times       = pd.DatetimeIndex(ds.time.values)
 
@@ -253,7 +258,7 @@ def aggregate_annual_hydro(ds: xr.Dataset, dataset_cfg: DictConfig, agg_cfg: Dic
             name = f"{vname}_hydro_sum"
             results.append(grp.sum("time").rename(name).to_dataset())
 
-    return xr.merge(results, compat="override")
+    return xr.merge(results, compat="override", join="outer")
 
 
 # ─────────────────────────── Dispatcher ──────────────────────────────────────

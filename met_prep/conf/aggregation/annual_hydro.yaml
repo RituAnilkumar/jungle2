@@ -3,12 +3,17 @@
 # NH: Oct-Sep (year label = the year in which Sep falls)
 # SH: Apr-Mar (year label = the year in which Mar falls)
 #
-# Hemisphere is inferred from grid latitude (lat > 0 → NH) unless overridden.
+# IMPORTANT — for global datasets, run met_prep TWICE:
+#   python main.py aggregation=annual_hydro aggregation.hemisphere=NH
+#   python main.py aggregation=annual_hydro aggregation.hemisphere=SH
+# gla_prep then picks the correct file per glacier based on its CenLat.
+#
+# For single-hemisphere datasets, set hemisphere explicitly to "NH" or "SH".
+# Leaving hemisphere: null defaults to NH globally and logs a warning.
 
 name: annual_hydro
 
-# Set to null to infer hemisphere per grid cell from latitude.
-# Or set explicitly to "NH" or "SH".
+# Set to "NH" or "SH". See note above — null defaults to NH with a warning.
 hemisphere: null
 
 # NH hydrological year: starts October, ends September.

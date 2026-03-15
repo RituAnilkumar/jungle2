@@ -1,15 +1,20 @@
 # Seasonal aggregation — ablation and accumulation seasons
 #
-# Hemisphere is inferred automatically from grid latitude (lat > 0 → NH).
-# Override per-hemisphere months below if needed for your region.
-#
 # NH defaults: ablation May-Sep, accumulation Oct-Apr
 # SH defaults: ablation Nov-Mar, accumulation Apr-Oct
+#
+# IMPORTANT — for global datasets, run met_prep TWICE:
+#   python main.py aggregation=seasonal aggregation.hemisphere=NH
+#   python main.py aggregation=seasonal aggregation.hemisphere=SH
+# This produces two output files (e.g. w5e5_seasonal_NH.nc, w5e5_seasonal_SH.nc).
+# gla_prep then picks the correct file per glacier based on its CenLat.
+#
+# For single-hemisphere datasets, set hemisphere explicitly to "NH" or "SH".
+# Leaving hemisphere: null defaults to NH globally and logs a warning.
 
 name: seasonal
 
-# Set to null to infer hemisphere per grid cell from latitude.
-# Or set explicitly to "NH" or "SH" for a single-hemisphere dataset.
+# Set to "NH" or "SH". See note above — null defaults to NH with a warning.
 hemisphere: null
 
 # NH season month definitions (1-indexed). Override if needed.

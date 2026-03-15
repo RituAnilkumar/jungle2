@@ -7,10 +7,10 @@ name: era5
 # Glob pattern or list of file paths to your ERA5 files.
 # Supports wildcards, e.g. "/data/era5/era5_*.nc"
 input_paths:
-  - /scratch/b5at/ranil.b5at/era5/era5_*.nc
+  - /scratch/b5at/ranil.b5at/met_raw/era5monthly_global/data.grib
 
 # File format: "netcdf" or "grib". Both are opened with xarray.
-file_format: netcdf
+file_format: grib
 
 # Variable names as they appear in the file (check with xr.open_dataset().data_vars).
 # Add or remove variables as needed.

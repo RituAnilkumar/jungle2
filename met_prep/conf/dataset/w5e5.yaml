@@ -8,11 +8,11 @@ name: w5e5
 # W5E5 is often split by variable and decade — list all relevant files.
 input_paths:
   temperature:
-    - /scratch/b5at/ranil.b5at/w5e5/tas_W5E5v2.0_*.nc
+    - /scratch/b5at/ranil.b5at/met_raw/w5e5daily/tas_W5E5v2.0_*.nc
   precipitation:
-    - /scratch/b5at/ranil.b5at/w5e5/pr_W5E5v2.0_*.nc
+    - /scratch/b5at/ranil.b5at/met_raw/w5e5daily/pr_W5E5v2.0_*.nc
   radiation:
-    - /scratch/b5at/ranil.b5at/w5e5/rsds_W5E5v2.0_*.nc
+    - /scratch/b5at/ranil.b5at/met_raw/w5e5daily/rsds_W5E5v2.0_*.nc
 
 file_format: netcdf
 

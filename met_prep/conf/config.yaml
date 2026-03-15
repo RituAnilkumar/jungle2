@@ -14,8 +14,8 @@
 #   python main.py -m aggregation=monthly,seasonal,annual_hydro   # multirun
 
 defaults:
-  - dataset: era5
-  - aggregation: seasonal
+  - dataset: era5 #choose from w5e5 or era5
+  - aggregation: seasonal #monthly,seasonal,annual_hydro,annual_calendar or override during runtime for multiple options
   - _self_
 
 # Output path for aggregated NetCDF files.

@@ -94,21 +94,26 @@ def _season_mask(times: pd.DatetimeIndex, months: list[int]) -> np.ndarray:
     return np.isin(times.month, months)
 
 
-def _season_year_label(times: pd.DatetimeIndex, start_months: list[int]) -> np.ndarray:
+def _season_year_label(times: pd.DatetimeIndex, months: list[int]) -> np.ndarray:
     """
     Label each timestep with the year of the season it belongs to.
-    For seasons that span a year boundary (e.g. Oct-Apr), timestamps in the
-    early months (before the start month of next occurrence) are labelled
+    For seasons that span a year boundary (e.g. NH accumulation Oct-Apr,
+    SH ablation Nov-Mar), timestamps in the early months get labelled
     with the *previous* calendar year so all months of one season share
     one label.
+
+    Wrapping is detected by checking whether the month list is non-consecutive
+    (e.g. [10,11,12,1,2,3,4] has a gap between 4 and 10).
+    The season start is the first month in the second half of the year (> 6),
+    valid for all standard glaciological season definitions.
     """
     labels = times.year.copy()
-    start  = min(start_months)
-    if max(start_months) > min(start_months):
-        # Season is contiguous within one year — label is straightforward
+    # Non-consecutive months → season wraps across the year boundary
+    wraps = (max(months) - min(months)) != (len(months) - 1)
+    if not wraps:
         return labels
-    # Season wraps around year boundary (e.g. Oct=10 … Apr=4)
-    # Months < start that are in the season belong to the previous season-year
+    # First month of the season (always in Jul-Dec for glaciological seasons)
+    start = min(m for m in months if m > 6)
     for i, t in enumerate(times):
         if t.month < start:
             labels[i] -= 1

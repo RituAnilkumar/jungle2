@@ -107,7 +107,7 @@ def _season_year_label(times: pd.DatetimeIndex, months: list[int]) -> np.ndarray
     The season start is the first month in the second half of the year (> 6),
     valid for all standard glaciological season definitions.
     """
-    labels = times.year.copy()
+    labels = times.year.to_numpy().copy()
     # Non-consecutive months → season wraps across the year boundary
     wraps = (max(months) - min(months)) != (len(months) - 1)
     if not wraps:

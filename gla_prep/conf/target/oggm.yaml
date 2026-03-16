@@ -22,13 +22,13 @@ auto_download: false
 # Base URL for OGGM fixed-geometry mass balance summary files.
 # Available spinup datasets (change elev_bands path segment as needed):
 #   W5E5 spinup (recommended, matches W5E5 met forcing):
-#     https://cluster.klima.uni-bremen.de/~oggm/gdirs/oggm_v1.6/L3-L5_files/2023.3/elev_bands/W5E5_spinup/RGI62/b_160/L4/summary
+#     https://cluster.klima.uni-bremen.de/~oggm/gdirs/oggm_v1.6/L3-L5_files/2023.3/elev_bands/W5E5_spinup/RGI62/b_080/L5/summary
 #   ERA5 spinup:
-#     https://cluster.klima.uni-bremen.de/~oggm/gdirs/oggm_v1.6/L3-L5_files/2023.3/elev_bands/ERA5_spinup/RGI62/b_160/L4/summary
-base_url: https://cluster.klima.uni-bremen.de/~oggm/gdirs/oggm_v1.6/L3-L5_files/2023.3/elev_bands/W5E5_spinup/RGI62/b_160/L4/summary
+#     https://cluster.klima.uni-bremen.de/~oggm/gdirs/oggm_v1.6/L3-L5_files/2025.6/elev_bands/ERA5/per_glacier_spinup/RGI62/b_080/L5/summary
+base_url: https://cluster.klima.uni-bremen.de/~oggm/gdirs/oggm_v1.6/L3-L5_files/2025.6/elev_bands/ERA5/per_glacier_spinup/RGI62/b_080/L5/summary
 
 # Only keep years >= min_year (OGGM spinup before 1979 is unreliable).
-min_year: 1979
+min_year: 1940
 
 # Column names in the output CSV.
 mb_col: mass_balance

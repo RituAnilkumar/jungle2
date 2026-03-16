@@ -1,20 +1,35 @@
 # OGGM fixed-geometry mass balance target
 #
 # Source: OGGM L5 fixed-geometry mass balance summary CSVs.
-# Download with:
+# Files are named: fixed_geometry_mass_balance_NN.csv (NN = 2-digit RGI region code)
+#
+# Manual download (all regions at once):
 #   wget -r -np -nH --cut-dirs=10 -A "*fixed_geometry_mass_balance_*.csv" \
 #     https://cluster.klima.uni-bremen.de/~oggm/gdirs/oggm_v1.6/L3-L5_files/\
 #     2023.3/elev_bands/W5E5_spinup/RGI62/b_160/L4/summary/
+#
+# Or set auto_download: true below to download per-region files on demand.
 
 name: oggm
 
 # Directory containing fixed_geometry_mass_balance_<NN>.csv files.
 summary_dir: /scratch/b5at/ranil.b5at/met_raw/oggm_summary/L5/summary
 
+# If true, automatically download the per-region CSV from base_url when missing.
+# Options: true / false
+auto_download: false
+
+# Base URL for OGGM fixed-geometry mass balance summary files.
+# Available spinup datasets (change elev_bands path segment as needed):
+#   W5E5 spinup (recommended, matches W5E5 met forcing):
+#     https://cluster.klima.uni-bremen.de/~oggm/gdirs/oggm_v1.6/L3-L5_files/2023.3/elev_bands/W5E5_spinup/RGI62/b_160/L4/summary
+#   ERA5 spinup:
+#     https://cluster.klima.uni-bremen.de/~oggm/gdirs/oggm_v1.6/L3-L5_files/2023.3/elev_bands/ERA5_spinup/RGI62/b_160/L4/summary
+base_url: https://cluster.klima.uni-bremen.de/~oggm/gdirs/oggm_v1.6/L3-L5_files/2023.3/elev_bands/W5E5_spinup/RGI62/b_160/L4/summary
+
 # Only keep years >= min_year (OGGM spinup before 1979 is unreliable).
 min_year: 1979
 
-# Outputs per-glacier annual mass balance column in main_features.csv.
 # Column names in the output CSV.
 mb_col: mass_balance
-mb_uncertainty_col: null   # OGGM fixed-geometry has no uncertainty; set to null
+mb_uncertainty_col: null   # OGGM fixed-geometry has no per-glacier uncertainty; set to null

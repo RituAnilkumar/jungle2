@@ -9,11 +9,33 @@ format, filters by min_year, and returns a tidy DataFrame with columns:
 from __future__ import annotations
 
 import logging
+import os
+import urllib.request
 
 import pandas as pd
 from omegaconf import DictConfig
 
 log = logging.getLogger(__name__)
+
+
+def _maybe_download(fn: str, target_cfg: DictConfig, rgi_code: str) -> None:
+    """Download the OGGM summary CSV if auto_download is enabled and the file is missing."""
+    if os.path.exists(fn):
+        return
+    if not target_cfg.get("auto_download", False):
+        raise FileNotFoundError(
+            f"OGGM summary file not found: {fn}\n"
+            f"Options:\n"
+            f"  1. Set auto_download: true in conf/target/oggm.yaml\n"
+            f"  2. Download manually:\n"
+            f"     wget {target_cfg.base_url}/fixed_geometry_mass_balance_{rgi_code}.csv"
+            f" -P {target_cfg.summary_dir}"
+        )
+    os.makedirs(target_cfg.summary_dir, exist_ok=True)
+    url = f"{target_cfg.base_url}/fixed_geometry_mass_balance_{rgi_code}.csv"
+    log.info("Downloading OGGM summary for region %s: %s", rgi_code, url)
+    urllib.request.urlretrieve(url, fn)
+    log.info("Download complete: %s", fn)
 
 
 def load(target_cfg: DictConfig, rgi_code: str) -> pd.DataFrame:
@@ -35,6 +57,7 @@ def load(target_cfg: DictConfig, rgi_code: str) -> pd.DataFrame:
     min_year    = int(target_cfg.get("min_year", 1979))
     fn = f"{summary_dir}/fixed_geometry_mass_balance_{rgi_code}.csv"
 
+    _maybe_download(fn, target_cfg, rgi_code)
     log.info("Loading OGGM summary: %s", fn)
     try:
         df = pd.read_csv(fn, encoding="utf-8")

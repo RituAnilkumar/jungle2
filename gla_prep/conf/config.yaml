@@ -31,8 +31,37 @@ defaults:
 
 output_path: /scratch/b5at/ranil.b5at/gla_prep/outputs
 
+# Base path to the directory containing RGI attribute CSV files.
+# Region yamls reference individual files as ${rgi_base_path}/NN_rgi60_RegionName.csv.
+# RGI 6.0 CSV files: nsidc0770_00.rgi60.attribs/  (https://nsidc.org/data/nsidc-0770)
+# RGI 7.0 SHP files: RGI2000-v7.0-G/              (https://nsidc.org/data/nsidc-0770)
+rgi_base_path: /scratch/b5at/ranil.b5at/met_raw/rgi/nsidc0770_00.rgi60.attribs
+
+# Base path to the met_prep NetCDF output — WITHOUT hemisphere suffix and WITHOUT .nc extension.
+# NOTE: Run met_prep twice (hemisphere=NH and hemisphere=SH) before running gla_prep.
+# gla_prep appends _NH.nc or _SH.nc automatically per glacier based on CenLat.
+# Example: if met_prep outputs era5_seasonal_NH.nc and era5_seasonal_SH.nc, set:
+#   met_input_base_path: /path/to/met_prep/outputs/era5_seasonal
+# Constructed paths:
+#   {met_input_base_path}_NH.nc  — used for glaciers with CenLat > 0
+#   {met_input_base_path}_SH.nc  — used for glaciers with CenLat <= 0
+met_input_base_path: /scratch/b5at/ranil.b5at/met_prep/outputs/era5_seasonal
+
+# Temporal aggregation level of the met_input files.
+# Must match the aggregation mode used when running met_prep.
+# Options:
+#   monthly          — one value per calendar month       (time coord: time)
+#   seasonal         — ablation + accumulation seasons    (time coord: season_year)
+#   annual_calendar  — Jan–Dec annual aggregates          (time coord: time)
+#   annual_hydro     — hydrological year aggregates       (time coord: hydro_year)
+#                      NH: Oct–Sep  |  SH: Apr–Mar
+met_input_freq: seasonal
+
 # RGI static attribute columns to include in main_features.csv.
 # rgi_id, CenLat, CenLon are always included regardless of this list.
+# Available RGI 6.0 columns include:
+#   Area, Zmin, Zmax, Zmed, Slope, Aspect, Lmax,
+#   Status, Connect, Form, TermType, Surging, Linkages, Name
 rgi_cols:
   - Area
   - Zmin

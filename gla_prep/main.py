@@ -12,8 +12,10 @@ Run with Hydra:
     python main.py target=temporal_avg region=r01
     python main.py -m region=r01,r02,r03              # multirun over regions
 
-IMPORTANT: met_prep must be run first to generate the NetCDF file
-referenced by region.<your_region>.met_input_path.
+IMPORTANT: met_prep must be run twice (hemisphere=NH and hemisphere=SH)
+before running gla_prep. The output files are referenced via
+met_input_base_path in config.yaml. gla_prep appends _NH.nc or _SH.nc
+automatically per glacier based on CenLat.
 """
 
 from __future__ import annotations
@@ -105,7 +107,7 @@ def main(cfg: DictConfig) -> None:
         )
 
     # ── Sample climate features ───────────────────────────────────────────
-    clim_df = sample_climate(gla_df, cfg.region)
+    clim_df = sample_climate(gla_df, cfg)
 
     # ── Join and save ─────────────────────────────────────────────────────
     join_and_save(rgi_df, mb_df, clim_df, glambie_df, temporal_avg_df, cfg)

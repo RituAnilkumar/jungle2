@@ -3,23 +3,13 @@
 
 rgi_code: "06"
 
-# Path to RGI attribute CSV or SHP for this region.
-# CSV: nsidc0770_00.rgi60.attribs/<NN>_rgi60_<RegionName>.csv
-# SHP: RGI2000-v7.0-G-<NN>_<regionname>/<NN>_<regionname>.shp
-rgi_attr_path: /scratch/b5at/ranil.b5at/rgi/nsidc0770_00.rgi60.attribs/06_rgi60_Iceland.csv
-
-# Format: "csv" or "shp"
+# RGI attribute file for this region.
+# Full path is resolved as ${rgi_base_path}/NN_rgi60_RegionName.csv
+# Set rgi_base_path in config.yaml.
+# Format options: "csv" (RGI 6.0) or "shp" (RGI 7.0)
+rgi_attr_path: ${rgi_base_path}/06_rgi60_Iceland.csv
 rgi_format: csv
 
-# Hemisphere — set to null to infer automatically from CenLat.
-# Explicit override: "NH" or "SH"
+# Hemisphere — set to null to infer automatically from CenLat (recommended).
+# Override: "NH" or "SH" (use for tropical regions near the equator, r16)
 hemisphere: null
-
-# Path to met_prep NetCDF output to sample climate from.
-# Must match the aggregation level used when running met_prep.
-met_input_path: /scratch/b5at/ranil.b5at/met_prep/outputs/era5_seasonal.nc
-
-# Temporal aggregation level of the met_input_path file.
-# Tells the climate sampler which time coordinate to use for nearest-neighbour matching.
-# Options: "monthly", "seasonal", "annual_calendar", "annual_hydro"
-met_input_freq: seasonal

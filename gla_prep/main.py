@@ -66,12 +66,14 @@ def main(cfg: DictConfig) -> None:
     glambie_df      = None
     temporal_avg_df = None
 
+    annual_df = None  # per-glacier annual table used for climate sampling index
+
     if target_name in ("oggm", "wgms"):
         mb_df = target_data
     elif target_name == "glambie":
         glambie_df = target_data
     elif target_name == "temporal_avg":
-        temporal_avg_df = target_data
+        temporal_avg_df, annual_df = target_data
         # Also load GLAMBIE if a path is provided
         if cfg.target.get("glambie_path", None):
             import src.targets.glambie as glambie_mod
@@ -91,19 +93,21 @@ def main(cfg: DictConfig) -> None:
             mb_df = target_data
 
     # ── Build (glacier, year) index for climate sampling ─────────────────
-    # Use the per-glacier MB table if available, otherwise use RGI × year range
+    import pandas as pd
     if mb_df is not None:
-        # Merge with RGI to get CenLat/CenLon for each (rgi_id, year)
-        import pandas as pd
         gla_df = mb_df[["rgi_id", "year"]].merge(
+            rgi_df[["rgi_id", "CenLat", "CenLon"]], on="rgi_id", how="inner"
+        )
+    elif annual_df is not None:
+        # temporal_avg: derive index from the Hugonnet annual table
+        gla_df = annual_df[["rgi_id", "year"]].merge(
             rgi_df[["rgi_id", "CenLat", "CenLon"]], on="rgi_id", how="inner"
         )
     else:
         raise ValueError(
-            "For glambie and temporal_avg targets, a per-glacier annual "
-            "climate feature table is still needed. "
-            "Run gla_prep with target=oggm or target=wgms first to generate "
-            "main_features.csv, then reference it in temporal_avg.source_mb_path."
+            f"Target '{target_name}' does not provide a per-glacier annual "
+            "table for climate sampling. For glambie targets, run gla_prep "
+            "with target=oggm or target=wgms first."
         )
 
     # ── Sample climate features ───────────────────────────────────────────

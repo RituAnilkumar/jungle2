@@ -1,23 +1,25 @@
 # Temporal moving-window average mass balance target
 #
-# Computes a moving window of average mass balance per glacier over the
-# specified window_years. Source data is per-glacier annual mass balance
-# (e.g. from OGGM or WGMS).
+# Source: Hugonnet et al. (2021) per-glacier cumulative geodetic mass balance.
+# Files named:  dh_NN_rgi60_pergla_cumul.csv  (NN = 2-digit RGI region code)
+# Download: https://zenodo.org/record/4530314
 #
-# Produces two outputs:
-#   main_features.csv      — per-glacier annual climate+RGI features (no MB column)
-#   glambie_targets.csv    — annual regional sums (if glambie_path is provided)
-#   temporal_avg_targets.csv — (rgi_id, start_date, end_date, avg_mb, uncertainty)
+# The cumulative dh column gives mass balance in meters water equivalent (mwe)
+# relative to 01/01/2000.  The pipeline converts to annual values and then
+# computes multi-annual moving-window averages in both mwe/yr and Gt/yr.
 #
-# Use with loss=temporal_avg or loss=glambie_and_temporal_avg in modeling.
+# Produces two outputs (written by joiner.py):
+#   main_features.csv        — per-glacier annual climate+RGI features
+#   temporal_avg_targets.csv — (rgi_id, start_date, end_date,
+#                               avg_mb_mwe, avg_mb_gt,
+#                               uncertainty_mwe, uncertainty_gt)
 
 name: temporal_avg
 
-# Source of per-glacier annual mass balance for computing the averages.
-# Path to a CSV with columns: rgi_id, year, mass_balance, [uncertainty]
-source_mb_path: /scratch/b5at/ranil.b5at/gla_prep/outputs/main_features_oggm.csv
-source_mb_col: mass_balance
-source_uncertainty_col: null   # set to column name if available
+# Path to the Hugonnet per-glacier cumulative mass balance CSV.
+# Expected columns: rgiid, time (DD/MM/YYYY), area (m²), dh (mwe), err_dh (mwe)
+# The placeholder uses Hydra interpolation so the region code is inserted automatically.
+hugonnet_path: /scratch/b5at/ranil.b5at/met_raw/hugonnet/dh_${region.rgi_code}_rgi60_pergla_cumul.csv
 
 # Moving window size in years.
 window_years: 20

@@ -12,4 +12,4 @@ rgi_format: csv
 
 # Hemisphere — set to null to infer automatically from CenLat (recommended).
 # Override: "NH" or "SH" (use for tropical regions near the equator, r16)
-hemisphere: null
+hemisphere: "NH"

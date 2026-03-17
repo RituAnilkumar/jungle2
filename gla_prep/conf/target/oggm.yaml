@@ -17,7 +17,7 @@ summary_dir: /scratch/b5at/ranil.b5at/met_raw/oggm_summary/L5/summary
 
 # If true, automatically download the per-region CSV from base_url when missing.
 # Options: true / false
-auto_download: false
+auto_download: true
 
 # Base URL for OGGM fixed-geometry mass balance summary files.
 # Available spinup datasets (change elev_bands path segment as needed):

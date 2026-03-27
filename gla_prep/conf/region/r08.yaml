@@ -10,6 +10,3 @@ rgi_code: "08"
 rgi_attr_path: ${rgi_base_path}/08_rgi60_Scandinavia.csv
 rgi_format: csv
 
-# Hemisphere — set to null to infer automatically from CenLat (recommended).
-# Override: "NH" or "SH" (use for tropical regions near the equator, r16)
-hemisphere: NH

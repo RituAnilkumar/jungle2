@@ -2,18 +2,25 @@
 # Source: GLAMBIE (Glacier Mass Balance Intercomparison Exercise)
 # https://glambie.org
 #
-# GLAMBIE provides annual regional mass balance sums (not per-glacier).
-# This target produces glambie_targets.csv alongside main_features.csv.
-# Use in conjunction with loss=glambie or loss=glambie_and_temporal_avg
-# in the modeling directory.
+# One CSV file per RGI region, named {N}_{region_name}.csv
+# (N = non-zero-padded RGI region number, e.g. 6_iceland.csv for r06)
+#
+# Extracts combined, altimetry, and gravimetry columns. If a method has no
+# data for a region its columns will be present but filled with NaN.
+# demdiff/glaciological columns are not included.
 
 name: glambie
 
-# Path to your GLAMBIE CSV file.
-data_path: /scratch/b5at/ranil.b5at/glambie/glambie_regional_annual.csv
+# Directory containing per-region GLAMBIE CSV files.
+# Files are matched by non-padded region number prefix: {N}_*.csv
+data_dir: /scratch/b5at/ranil.b5at/glacier_data/glambie
 
-# Column name mappings — adjust to match your GLAMBIE file's column names.
-region_col:       region        # RGI region identifier (e.g. "06" or "RGI06")
-year_col:         year
-regional_sum_col: mass_balance  # Gt yr-1 or mm w.e. yr-1 — keep units consistent
-uncertainty_col:  uncertainty
+# Column name mappings for time and region — adjust if your GLAMBIE file differs.
+region_col:     region
+start_date_col: start_dates   # fractional year, e.g. 1999.75
+end_date_col:   end_dates     # fractional year, e.g. 2000.75
+
+# Unit preference: "gt" or "mwe"
+# Selects {method}_gt / {method}_gt_errors  or  {method}_mwe / {method}_mwe_errors
+# for combined, altimetry, and gravimetry.
+units: gt

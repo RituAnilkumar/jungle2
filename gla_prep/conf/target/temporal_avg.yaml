@@ -8,22 +8,23 @@
 # relative to 01/01/2000.  The pipeline converts to annual values and then
 # computes multi-annual moving-window averages in both mwe/yr and Gt/yr.
 #
-# Produces two outputs (written by joiner.py):
-#   main_features.csv        — per-glacier annual climate+RGI features
-#   temporal_avg_targets.csv — (rgi_id, start_date, end_date,
-#                               avg_mb_mwe, avg_mb_gt,
-#                               uncertainty_mwe, uncertainty_gt)
+# Produces (written by joiner.py):
+#   main_features_rNN.csv        — all RGI glaciers × all met years (always)
+#   temporal_avg_targets_rNN.csv — (rgi_id, start_date, end_date,
+#                                   avg_mb_mwe, avg_mb_gt,
+#                                   uncertainty_mwe, uncertainty_gt)
+#   glambie_targets_rNN.csv      — only if glambie_path is set below
 
 name: temporal_avg
 
 # Path to the Hugonnet per-glacier cumulative mass balance CSV.
 # Expected columns: rgiid, time (DD/MM/YYYY), area (m²), dh (mwe), err_dh (mwe)
 # The placeholder uses Hydra interpolation so the region code is inserted automatically.
-hugonnet_path: /scratch/b5at/ranil.b5at/met_raw/hugonnet/dh_${region.rgi_code}_rgi60_pergla_cumul.csv
+hugonnet_path: /scratch/b5at/ranil.b5at/glacier_data/hugonnet/dh_${region.rgi_code}_rgi60_pergla_cumul.csv
 
 # Moving window size in years.
 window_years: 20
 
-# Optional: path to GLAMBIE regional sums CSV (same format as glambie.yaml).
+# Optional: path to a GLAMBIE directory (same format as glambie.yaml data_dir).
 # Set to null if not using the glambie loss concurrently.
 glambie_path: null

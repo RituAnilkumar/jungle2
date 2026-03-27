@@ -1,11 +1,12 @@
 # gla_prep
 
-Prepares glacier mass balance targets and climate features for the modelling
-directory. For each RGI region it produces:
+Prepares glacier climate features and mass balance targets for the modelling
+directory. Features and targets are independent:
 
-- `main_features_rNN.csv` — per-glacier × year climate + RGI static attributes
-- `temporal_avg_targets_rNN.csv` — multi-annual window averages (if `target=temporal_avg`)
-- `glambie_targets_rNN.csv` — regional sums (if GLAMBIE path is set)
+- `main_features_rNN.csv` — **always produced**; all RGI glaciers × all years in the met file; columns: `rgi_id, year, [RGI static attrs], [climate features]`
+- `{target}_targets_rNN.csv` — per-glacier annual MB (`target=oggm` or `target=wgms`)
+- `glambie_targets_rNN.csv` — regional sums (`target=glambie`, or `target=temporal_avg` with `glambie_path` set)
+- `temporal_avg_targets_rNN.csv` — multi-year window averages (`target=temporal_avg`)
 
 ---
 
@@ -25,11 +26,11 @@ cd ../gla_prep
 python main.py target=temporal_avg region=r06
 ```
 
-Outputs land in `output_path` (set in [conf/config.yaml](conf/config.yaml)):
+Outputs land in `output_path/{target}/` (set in [conf/config.yaml](conf/config.yaml)):
 
 ```
-<output_path>/main_features_r06.csv
-<output_path>/temporal_avg_targets_r06.csv
+<output_path>/temporal_avg/main_features_r06.csv           ← all glaciers × all met years
+<output_path>/temporal_avg/temporal_avg_targets_r06.csv    ← Hugonnet window averages
 ```
 
 **Multiple regions at once:**
@@ -38,23 +39,30 @@ Outputs land in `output_path` (set in [conf/config.yaml](conf/config.yaml)):
 python main.py -m target=temporal_avg region=r01,r02,r06,r07
 ```
 
+> Features always cover the full met file year range regardless of target.
+> Targets are written as separate files and are not merged into `main_features`.
+
 ---
 
 ## Targets
 
-| Target | Source | Per-glacier annual MB? | Multi-annual averages? |
-|---|---|---|---|
-| `temporal_avg` | Hugonnet et al. (2021) cumulative dh | yes (internal) | yes |
-| `oggm` | OGGM fixed-geometry summary CSVs | yes | no |
-| `wgms` | WGMS | yes | no |
-| `glambie` | GLAMBIE regional sums | no (regional only) | no |
-| `custom` | User-supplied CSV | configurable | no |
+`main_features_rNN.csv` is always produced regardless of target (full RGI × met years).
+The target only controls what additional file is written alongside it.
+
+| Target | Additional output | Source |
+|---|---|---|
+| `oggm` | `oggm_targets_rNN.csv` — `rgi_id, year, mass_balance` | OGGM L5 fixed-geometry summary CSVs (auto-downloadable) |
+| `wgms` | `wgms_targets_rNN.csv` — `rgi_id, year, mass_balance` | WGMS |
+| `glambie` | `glambie_targets_rNN.csv` — `region, year, regional_sum, uncertainty` | User-provided GLAMBIE CSV |
+| `temporal_avg` | `temporal_avg_targets_rNN.csv` — `rgi_id, start_date, end_date, avg_mb_mwe, avg_mb_gt, uncertainty_mwe, uncertainty_gt` | Hugonnet et al. (2021) cumulative dh |
+| `custom` | `custom_targets_rNN.csv` | User-supplied CSV |
 
 Switch target from the CLI:
 
 ```bash
 python main.py target=oggm region=r06
-python main.py target=wgms region=r06
+python main.py target=glambie region=r06
+python main.py target=temporal_avg region=r06
 ```
 
 ---

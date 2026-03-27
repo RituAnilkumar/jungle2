@@ -10,6 +10,3 @@ rgi_code: "07"
 rgi_attr_path: ${rgi_base_path}/07_rgi60_Svalbard.csv
 rgi_format: csv
 
-# Hemisphere — set to null to infer automatically from CenLat (recommended).
-# Override: "NH" or "SH" (use for tropical regions near the equator, r16)
-hemisphere: NH

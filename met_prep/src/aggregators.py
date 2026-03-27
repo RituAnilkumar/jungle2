@@ -12,9 +12,10 @@ Conventions:
   - Temperature  : stats as configured (mean, min, max, median, std)
   - Precipitation: always summed (mm per period)
   - Radiation    : always summed (J m-2 or W m-2 × seconds per period)
-  - Output time coordinate is labelled with the *start* of each period
-    (monthly → first day of month; seasonal → first day of ablation/accum season;
-     annual → first day of the year / hydrological year)
+  - Season-year label = the calendar year in which the season *ends*.
+    e.g. NH accumulation Oct 2000 – Apr 2001 → season_year 2001.
+  - For seasonal and annual_hydro, NH and SH definitions are applied
+    per grid cell (lat >= 0 → NH) and combined into a single output file.
 """
 
 from __future__ import annotations
@@ -90,90 +91,67 @@ def aggregate_monthly(ds: xr.Dataset, dataset_cfg: DictConfig, agg_cfg: DictConf
 
 # ─────────────────────────── Seasonal ────────────────────────────────────────
 
+def _detect_lat_dim(ds: xr.Dataset) -> str:
+    """Return the name of the latitude dimension."""
+    for name in ("latitude", "lat"):
+        if name in ds.dims:
+            return name
+    raise ValueError(f"No latitude dimension found. Available dims: {list(ds.dims)}")
+
+
 def _season_mask(times: pd.DatetimeIndex, months: list[int]) -> np.ndarray:
     return np.isin(times.month, months)
 
 
 def _season_year_label(times: pd.DatetimeIndex, months: list[int]) -> np.ndarray:
     """
-    Label each timestep with the year of the season it belongs to.
-    For seasons that span a year boundary (e.g. NH accumulation Oct-Apr,
-    SH ablation Nov-Mar), timestamps in the early months get labelled
-    with the *previous* calendar year so all months of one season share
-    one label.
+    Label each timestep with the season-year it belongs to.
+    Season-year = the calendar year in which the season ends.
 
-    Wrapping is detected by checking whether the month list is non-consecutive
-    (e.g. [10,11,12,1,2,3,4] has a gap between 4 and 10).
-    The season start is the first month in the second half of the year (> 6),
-    valid for all standard glaciological season definitions.
+    For non-wrapping seasons (e.g. May-Sep) this is just times.year.
+    For wrapping seasons (e.g. Oct-Apr), months >= the season-start month
+    are incremented by 1:
+        Oct 2000 → 2001, Jan 2001 → 2001  ⟹ season_year 2001 = Oct 2000 – Apr 2001
+
+    Wrapping is detected by a gap in the month list
+    (e.g. [10,11,12,1,2,3,4] is non-consecutive).
+    The season-start month is always in Jul-Dec for glaciological definitions.
     """
-    labels = times.year.to_numpy().copy()
-    # Non-consecutive months → season wraps across the year boundary
     wraps = (max(months) - min(months)) != (len(months) - 1)
     if not wraps:
-        return labels
-    # First month of the season (always in Jul-Dec for glaciological seasons)
+        return times.year.to_numpy().copy()
     start = min(m for m in months if m > 6)
-    for i, t in enumerate(times):
-        if t.month < start:
-            labels[i] -= 1
-    return labels
+    return np.where(times.month >= start, times.year + 1, times.year)
 
 
-def aggregate_seasonal(ds: xr.Dataset, dataset_cfg: DictConfig, agg_cfg: DictConfig) -> xr.Dataset:
-    """
-    Aggregate into ablation and accumulation seasons.
-
-    The hemisphere is inferred from the latitude coordinate of each grid
-    cell (lat > 0 → NH). If the dataset has no latitude coordinate or
-    hemisphere is overridden in config, a single hemisphere is applied.
-
-    Output coordinate ``season_year`` is an integer year label.
-    Output variable names follow the pattern:
-        <varname>_abl_<stat>  (ablation)
-        <varname>_acc_<stat>  (accumulation)
-        <varname>_abl_sum / <varname>_acc_sum  (precip and radiation)
-    """
+def _agg_seasonal_hem(
+    ds: xr.Dataset,
+    dataset_cfg: DictConfig,
+    agg_cfg: DictConfig,
+    hem: str,
+) -> xr.Dataset:
+    """Compute seasonal aggregation using one hemisphere's month definitions."""
     vars_cfg   = dataset_cfg.variables
     stats      = list(agg_cfg.temp_stats)
-    hemisphere = agg_cfg.get("hemisphere", None)
-    results    = []
-
-    # Use a representative latitude for hemisphere inference if global dataset
-    # For per-cell inference, aggregation must be done after spatial subsetting.
-    # Here we apply a single hemisphere based on config or default NH.
-    hem = hemisphere if hemisphere and hemisphere.upper() in ("NH", "SH") else "NH"
-    if hemisphere is None:
-        log.warning(
-            "hemisphere=null in config: applying NH season definition globally. "
-            "For SH glaciers, set hemisphere: SH or run with -m hemisphere=NH,SH."
-        )
-
     abl_months = get_ablation_months(hem, agg_cfg)
     acc_months = get_accumulation_months(hem, agg_cfg)
-
-    times = pd.DatetimeIndex(ds.time.values)
+    times      = pd.DatetimeIndex(ds.time.values)
+    results    = []
 
     for role, var_cfg in vars_cfg.items():
         vname = var_cfg.name
         if vname not in ds:
             continue
         da = ds[vname]
-
         if role == "precipitation":
             da = _precip_to_mm_per_day(da, var_cfg.units)
 
         for season, months in [("abl", abl_months), ("acc", acc_months)]:
-            mask   = _season_mask(times, months)
-            da_sel = da.isel(time=mask)
-            t_sel  = times[mask]
-
-            # Assign season_year coordinate
-            yr_labels = _season_year_label(t_sel, months)
-            da_sel    = da_sel.assign_coords(
-                season_year=("time", yr_labels)
-            )
-            grp = da_sel.groupby("season_year")
+            mask      = _season_mask(times, months)
+            da_sel    = da.isel(time=mask)
+            yr_labels = _season_year_label(times[mask], months)
+            da_sel    = da_sel.assign_coords(season_year=("time", yr_labels))
+            grp       = da_sel.groupby("season_year")
 
             if role == "temperature":
                 for stat in stats:
@@ -184,6 +162,28 @@ def aggregate_seasonal(ds: xr.Dataset, dataset_cfg: DictConfig, agg_cfg: DictCon
                 results.append(grp.sum("time").rename(name).to_dataset())
 
     return xr.merge(results, compat="override", join="outer")
+
+
+def aggregate_seasonal(ds: xr.Dataset, dataset_cfg: DictConfig, agg_cfg: DictConfig) -> xr.Dataset:
+    """
+    Aggregate into ablation and accumulation seasons.
+
+    NH and SH season definitions are applied per grid cell using the
+    latitude sign (lat >= 0 → NH, lat < 0 → SH), then combined into a
+    single output — matching the notebook pattern:
+        nh.where(mask_nh).fillna(sh.where(~mask_nh))
+
+    Output coordinate ``season_year`` is an integer labelled by the year
+    the season ends in (e.g. NH acc Oct 2000 – Apr 2001 → season_year 2001).
+    Output variable names: <varname>_abl_<stat> / <varname>_acc_<stat>
+    (precip and radiation use _sum in place of a stat name).
+    """
+    lat_dim = _detect_lat_dim(ds)
+    nh      = _agg_seasonal_hem(ds, dataset_cfg, agg_cfg, "NH")
+    sh      = _agg_seasonal_hem(ds, dataset_cfg, agg_cfg, "SH")
+    mask_nh = ds[lat_dim] >= 0
+    log.info("Combining NH/SH seasonal aggregates per grid-cell latitude")
+    return nh.where(mask_nh).fillna(sh.where(~mask_nh)).sortby("season_year")
 
 
 # ─────────────────────────── Annual calendar ──────────────────────────────────
@@ -217,42 +217,28 @@ def aggregate_annual_calendar(ds: xr.Dataset, dataset_cfg: DictConfig, agg_cfg: 
 
 # ─────────────────────────── Annual hydrological ─────────────────────────────
 
-def aggregate_annual_hydro(ds: xr.Dataset, dataset_cfg: DictConfig, agg_cfg: DictConfig) -> xr.Dataset:
-    """
-    Aggregate over hydrological years.
-
-    NH (start_month=10): Oct(Y) – Sep(Y+1), labelled with Y+1 (the year Sep falls in).
-    SH (start_month=4) : Apr(Y) – Mar(Y+1), labelled with Y+1 (the year Mar falls in).
-
-    Output coordinate is ``hydro_year`` (integer).
-    """
-    vars_cfg   = dataset_cfg.variables
-    stats      = list(agg_cfg.temp_stats)
-    hemisphere = agg_cfg.get("hemisphere", None)
-    hem        = hemisphere if hemisphere and hemisphere.upper() in ("NH", "SH") else "NH"
-
-    if hemisphere is None:
-        log.warning(
-            "hemisphere=null in config: applying NH hydrological year globally. "
-            "For SH glaciers, set hemisphere: SH or run with -m hemisphere=NH,SH."
-        )
+def _agg_hydro_hem(
+    ds: xr.Dataset,
+    dataset_cfg: DictConfig,
+    agg_cfg: DictConfig,
+    hem: str,
+) -> xr.Dataset:
+    """Compute hydrological-year aggregation for one hemisphere."""
+    vars_cfg    = dataset_cfg.variables
+    stats       = list(agg_cfg.temp_stats)
     start_month = get_hydro_start_month(hem, agg_cfg)
     times       = pd.DatetimeIndex(ds.time.values)
-
-    # Assign hydro_year label: if month >= start_month → label = year+1; else label = year
+    # month >= start → label year+1 (season ends in that year)
     hydro_years = np.where(times.month >= start_month, times.year + 1, times.year)
-
-    results = []
+    results     = []
 
     for role, var_cfg in vars_cfg.items():
         vname = var_cfg.name
         if vname not in ds:
             continue
         da = ds[vname].assign_coords(hydro_year=("time", hydro_years))
-
         if role == "precipitation":
             da = _precip_to_mm_per_day(da, var_cfg.units)
-
         grp = da.groupby("hydro_year")
 
         if role == "temperature":
@@ -264,6 +250,22 @@ def aggregate_annual_hydro(ds: xr.Dataset, dataset_cfg: DictConfig, agg_cfg: Dic
             results.append(grp.sum("time").rename(name).to_dataset())
 
     return xr.merge(results, compat="override", join="outer")
+
+
+def aggregate_annual_hydro(ds: xr.Dataset, dataset_cfg: DictConfig, agg_cfg: DictConfig) -> xr.Dataset:
+    """
+    Aggregate over hydrological years, combining NH and SH per grid cell.
+
+    NH (start Oct): hydro_year N = Oct(N-1) – Sep(N).
+    SH (start Apr): hydro_year N = Apr(N-1) – Mar(N).
+    Label = the year the hydrological year ends in.
+    """
+    lat_dim = _detect_lat_dim(ds)
+    nh      = _agg_hydro_hem(ds, dataset_cfg, agg_cfg, "NH")
+    sh      = _agg_hydro_hem(ds, dataset_cfg, agg_cfg, "SH")
+    mask_nh = ds[lat_dim] >= 0
+    log.info("Combining NH/SH hydrological-year aggregates per grid-cell latitude")
+    return nh.where(mask_nh).fillna(sh.where(~mask_nh)).sortby("hydro_year")
 
 
 # ─────────────────────────── Dispatcher ──────────────────────────────────────

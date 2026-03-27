@@ -6,6 +6,9 @@ value from a met_prep NetCDF output using xarray .sel(method='nearest').
 
 Longitude is normalised to 0–360 to match ERA5/W5E5 conventions before
 sampling, then dropped from the output (CenLon from RGI is kept instead).
+
+met_prep produces a single combined file (NH and SH aggregated per grid cell),
+so no hemisphere routing is needed here.
 """
 
 from __future__ import annotations
@@ -16,8 +19,6 @@ import numpy as np
 import pandas as pd
 import xarray as xr
 from omegaconf import DictConfig
-
-from src.hemisphere import get_hemisphere
 
 log = logging.getLogger(__name__)
 
@@ -100,15 +101,39 @@ def _sample_from_file(
     return pd.concat([gla_group.reset_index(drop=True), clim_df], axis=1)
 
 
+def get_met_years(cfg: DictConfig) -> list[int]:
+    """Return the integer years present in the met_prep NetCDF.
+
+    The time coordinate name and type depend on met_input_freq:
+      seasonal / annual_hydro  → integer year coordinate
+      monthly / annual_calendar → cftime/datetime coordinate (extract unique years)
+    """
+    met_path = f"{cfg.met_input_base_path}.nc"
+    met_freq = cfg.met_input_freq
+    time_coord = _TIME_COORD.get(met_freq, "time")
+
+    with xr.open_dataset(met_path) as ds:
+        if time_coord not in ds.coords:
+            raise ValueError(
+                f"Expected coordinate '{time_coord}' not found in {met_path}. "
+                f"Available coords: {list(ds.coords)}"
+            )
+        raw = ds[time_coord].values
+
+    if met_freq in _TIMESTAMP_FREQS:
+        years = sorted(set(int(pd.Timestamp(t).year) for t in raw))
+    else:
+        years = sorted(int(y) for y in raw)
+
+    log.info("Met file covers %d years: %d – %d", len(years), years[0], years[-1])
+    return years
+
+
 def sample_climate(
     gla_df: pd.DataFrame,
     cfg: DictConfig,
 ) -> pd.DataFrame:
     """Sample met_prep climate variables at each (glacier, year) location.
-
-    Hemisphere is inferred per glacier from CenLat (or overridden by
-    cfg.region.hemisphere). NH glaciers are sampled from
-    {met_input_base_path}_NH.nc and SH glaciers from _SH.nc.
 
     Parameters
     ----------
@@ -116,8 +141,7 @@ def sample_climate(
         DataFrame with columns: rgi_id, year, CenLat, CenLon.
         year must be integer.
     cfg : DictConfig
-        Root Hydra config. Uses cfg.met_input_base_path, cfg.met_input_freq,
-        and cfg.region.hemisphere (for explicit override).
+        Root Hydra config. Uses cfg.met_input_base_path and cfg.met_input_freq.
 
     Returns
     -------
@@ -125,21 +149,5 @@ def sample_climate(
         Input DataFrame with climate feature columns appended.
         NaN reporting happens here; dropping happens in joiner.py.
     """
-    met_base     = cfg.met_input_base_path
-    met_freq     = cfg.met_input_freq
-    hem_override = cfg.region.get("hemisphere", None)
-
-    # Assign hemisphere per glacier
-    gla_df = gla_df.copy()
-    gla_df["_hem"] = gla_df["CenLat"].apply(
-        lambda lat: get_hemisphere(lat, hem_override)
-    )
-
-    parts = []
-    for hem, group in gla_df.groupby("_hem"):
-        met_path = f"{met_base}_{hem}.nc"
-        parts.append(_sample_from_file(group.copy(), met_path, met_freq))
-
-    result = pd.concat(parts).reset_index(drop=True)
-    result = result.drop(columns=["_hem"], errors="ignore")
-    return result
+    met_path = f"{cfg.met_input_base_path}.nc"
+    return _sample_from_file(gla_df.copy(), met_path, cfg.met_input_freq)

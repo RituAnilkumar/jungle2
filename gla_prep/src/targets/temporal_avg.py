@@ -10,7 +10,7 @@ temporal_avg_targets.csv with columns:
     uncertainty_mwe, uncertainty_gt
 
 Also returns an annual DataFrame (rgi_id, year, annual_mb_mwe, area_m2,
-uncertainty) for use as the climate sampling index in main.py.
+uncertainty) — used internally by main.py but not written to disk.
 
 Notes
 -----
@@ -85,7 +85,7 @@ def load(
         )
         return empty_ta, empty_an
 
-    raw["date"] = pd.to_datetime(raw["time"], format="%d/%m/%Y")
+    raw["date"] = pd.to_datetime(raw["time"])
     raw["year"] = raw["date"].dt.year
 
     annual_df = _to_annual(raw)
@@ -115,7 +115,8 @@ def _to_annual(raw: pd.DataFrame) -> pd.DataFrame:
         # Select last observation within each calendar year
         annual = (
             grp.groupby("year", group_keys=False)
-            .apply(lambda x: x.loc[x["date"].idxmax()])
+            .apply(lambda x: x.loc[x["date"].idxmax()], include_groups=False)
+            .reset_index()                  # promotes year from index to column
             [["year", "dh", "err_dh"]]
             .sort_values("year")
             .reset_index(drop=True)

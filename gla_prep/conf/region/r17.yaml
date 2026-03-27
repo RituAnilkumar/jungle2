@@ -10,6 +10,3 @@ rgi_code: "17"
 rgi_attr_path: ${rgi_base_path}/17_rgi60_SouthernAndes.csv
 rgi_format: csv
 
-# Hemisphere — set to null to infer automatically from CenLat (recommended).
-# Override: "NH" or "SH" (use for tropical regions near the equator, r16)
-hemisphere: SH

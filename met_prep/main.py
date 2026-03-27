@@ -49,9 +49,7 @@ def main(cfg: DictConfig) -> None:
 
     scenario = cfg.dataset.get("scenario", "")
     scenario_tag = f"_{scenario}" if scenario else ""
-    hemisphere = cfg.aggregation.get("hemisphere", None)
-    hem_tag = f"_{hemisphere.upper()}" if hemisphere and hemisphere.upper() in ("NH", "SH") else ""
-    out_fn = out_dir / f"{cfg.dataset.name}{scenario_tag}_{cfg.aggregation.name}{hem_tag}.nc"
+    out_fn = out_dir / f"{cfg.dataset.name}{scenario_tag}_{cfg.aggregation.name}.nc"
 
     log.info("Writing → %s", out_fn)
     ds_agg.to_netcdf(out_fn)
